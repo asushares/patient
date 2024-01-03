@@ -1,0 +1,68 @@
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" aria-label="patient portal navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" [routerLink]="['/']"><i class="bi-person"></i> {{patientName()}}'s Patient Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}">
+                    <a class="nav-link" [routerLink]="['summary']">
+                        <span class="bi bi-clipboard-data"></span> My Record Summary
+                    </a>
+                </li>
+
+                <li class="nav-item" [routerLinkActive]="'active'"
+                    [routerLinkActiveOptions]="{exact: true}">
+                    <a class="nav-link" [routerLink]="['consent-list']">
+                        <span class="bi bi-files"></span> My Sharing Settings
+                    </a>
+                </li>
+
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                <li class="nav-item dropdown" [routerLinkActive]="'active'">
+
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownDocumentation"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-book"></i> Documentation
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownDocumentation">
+                        <li><a class="dropdown-item" href="https://www.asushares.com" target="_blank"><i
+                                    class="bi-globe"></i> ASU SHARES Home</a></li>
+                        <li><a class="dropdown-item" href="https://www.github.com/asushares" target="_blank"><i
+                                    class="bi-github"></i> GitHub</a></li>
+                    </ul>
+                </li>
+                <!-- <li class="nav-item" [routerLinkActive]="'settings'" [routerLinkActiveOptions]="{exact: true}">
+                    <a class="nav-link" [routerLink]="['/settings']">
+                        <i class="bi-gear"></i> Settings
+                    </a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="['/']"><span class="bi bi-people"></span> Patient Selection</a>
+                </li>
+
+                <li class="nav-item" [routerLinkActive]="'active'">
+                    <a class="nav-link" href="https://www.asushares.com/contact/" target="_blank">
+                        <i class="bi-chat"></i> Leave Feedback
+                    </a>
+                </li>
+            </ul>
+
+            <!-- <form>
+                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+            </form> -->
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <router-outlet></router-outlet>
+</div>
