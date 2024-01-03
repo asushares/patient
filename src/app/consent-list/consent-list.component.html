@@ -29,12 +29,12 @@
                 <span *ngIf="currentSort() == sortTypes.ID" class="bi" [class.bi-arrow-up]="currentOrder() == 'asc'"
                     [class.bi-arrow-down]="currentOrder() == 'desc'"> </span>
             </th>
-            <th class="sortable" (click)="sortBy(sortTypes.Subject)">
+            <!-- <th class="sortable" (click)="sortBy(sortTypes.Subject)">
                 Subject
                 <span *ngIf="currentSort() == sortTypes.Subject" class="bi"
                     [class.bi-arrow-up]="currentOrder() == 'asc'" [class.bi-arrow-down]="currentOrder() == 'desc'">
                 </span>
-            </th>
+            </th> -->
             <th class="sortable" (click)="sortBy(sortTypes.Status)">
                 Status
                 <span *ngIf="currentSort() == sortTypes.Status" class="bi"
@@ -67,7 +67,7 @@
         <tr *ngFor="let c of bundle.entry">
             <td><a [routerLink]="['..', 'consent', c.resource!.id]">
                     {{c.resource?.id}}</a></td>
-            <td>
+            <!-- <td>
                 <div *ngIf="c.resource?.subject?.reference">
                     <b>
                         <span *ngIf="c.resource!.subject!.reference!"
@@ -76,7 +76,7 @@
                     -
                     {{c.resource!.subject!.reference}}
                 </div>
-            </td>
+            </td> -->
             <td>{{c.resource?.status}}</td>
             <td>
                 @if (c.resource?.period) {
