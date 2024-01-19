@@ -1,11 +1,13 @@
 // Author: Preston Lee
 
 import { Component } from '@angular/core';
-import { Consent } from 'fhir/r5';
+import { Bundle, Consent, Organization } from 'fhir/r5';
 import { ConsentService } from '../consent.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SimpleConsent } from './simple_consent';
+import { OrganizationService } from '../organization.service';
 
 @Component({
   selector: 'app-consent',
@@ -16,11 +18,18 @@ import { CommonModule } from '@angular/common';
 })
 export class ConsentComponent {
 
-
   consent_id: string | null = null;
   consent: Consent | null = null;
 
-  constructor(private consentService: ConsentService, private route: ActivatedRoute, private router: Router) {
+  simple_consent: SimpleConsent = new SimpleConsent(); // FIXME Create from real data instead.
+
+
+  organizationSearchText = '';
+  organizationList: Bundle<Organization> | null = null;
+  organizationSelected: Organization[] = [];
+  organizationSearching: boolean = false;
+
+  constructor(private consentService: ConsentService, private organizationService: OrganizationService, private route: ActivatedRoute, private router: Router) {
 
   }
 
@@ -63,5 +72,59 @@ export class ConsentComponent {
       delete this.consent.period;
     }
   }
+
+
+  organizationSearch(text: string) {
+    this.organizationSearching = true;
+    this.organizationService.search(this.organizationSearchText).subscribe(b => {
+      this.organizationList = b;
+      this.organizationSearching = false;
+    });
+  }
+
+  selectOrganization(o: Organization) {
+    if (this.consent) {
+      this.organizationSelected.push(o);
+      this.consent.controller?.push({ type: 'Organization', reference: 'Organization/' + o.id });
+    }
+  }
+
+  removeOrganization(org: Organization) {
+    if (this.consent) {
+      if (this.consent.controller !== undefined) {
+        for (let i = 0; i < this.consent.controller.length; i++) {
+          if ('Organization/' + org.id == this.consent.controller[i].reference) {
+            this.consent.controller.splice(i, 1);
+          }
+        }
+        for (let i = 0; i < this.organizationSelected.length; i++) {
+          if (org.id == this.organizationSelected[i].id) {
+            this.organizationSelected.splice(i, 1);
+          }
+        }
+      }
+    }
+  }
+
+  organizationForReference(ref: string): Organization | null {
+    let org = null;
+    this.organizationSelected.forEach(o => {
+      if ('Organization/' + o.id == ref) {
+        org = o;
+      }
+    });
+    return org;
+  }
+
+  isSelectedOrganization(o: Organization): boolean {
+    let selected = false;
+    this.organizationSelected.forEach(n => {
+      if (n.id == o.id) {
+        selected = true;
+      }
+    });
+    return selected;
+  }
+
 
 }
