@@ -50,12 +50,12 @@ export class ConsentComponent {
             console.log('Consent data null. Either an intentional cache clearance or not loaded yet. No worries.');
           }
           this.consent?.controller?.forEach(c => {
-            console.log("REF: " + c.reference);
+            // console.log("REF: " + c.reference);
             console.log(c.reference?.match(/Organization\/.+/));
             
             if (c.reference?.match(/Organization\/.+/) != null) {
               let id = c.reference.substring('Organization/'.length);
-              console.log("CID: " + id);
+              // console.log("CID: " + id);
               this.organizationService.get(id).subscribe({
                 next: o => {
                   this.organizationSelected.push(o);
