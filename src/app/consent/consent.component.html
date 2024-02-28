@@ -26,8 +26,12 @@
 
             @if (simple_consent.mode == 'custom') {
             <div class="form-check form-switch mt-3 ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryBehavioralHealth" checked>
-                <label class="form-check-label" for="categoryBehavioralHealth">Behavioral Health</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="categorySubstanceUse" checked>
+                <label class="form-check-label" for="categorySubstanceUse">Substance Use</label>
+            </div>
+            <div class="form-check form-switch ms-4">
+                <input class="form-check-input" type="checkbox" role="switch" id="categoryMentalHealth" checked>
+                <label class="form-check-label" for="categoryMentalHealth">Mental Health</label>
             </div>
             <div class="form-check form-switch ms-4">
                 <input class="form-check-input" type="checkbox" role="switch" id="categoryDemographics" checked>
@@ -70,6 +74,40 @@
                 <label class="form-check-label" for="categoryViolence">Violence</label>
             </div>
             }
+
+            <div class=" mt-4" *ngIf="!consent.period">
+                <!-- <h2>Effective From</h2> -->
+                <button class="btn btn-sm btn-primary" (click)="addPeriod()"><span class="bi-calendar"></span>
+                    &nbsp;Add Effective Dates</button><br>
+                <span class="form-text">None are currently set.</span>
+
+            </div>
+            <div *ngIf="consent.period" class="row mt-4">
+
+                <div class="col-sm-12 mb-2"> <button class="btn btn-sm btn-primary" (click)="removePeriod()"
+                        *ngIf="consent.period"><span class="bi-save"></span>&nbsp; Remove Date Restrictions</button>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-floating" *ngIf="consent.period">
+                        <input class="input form-control form-control-sm date datepicker-input" type="text"
+                            name="consent_provision_period_start" *ngIf="consent.provision && consent.period"
+                            [(ngModel)]="consent.period.start">
+                        <label for="consent_provision_period_start">Start</label>
+                        <small class="form-text">Begins at this date in yyyy-mm-dd format.</small>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-floating" *ngIf="consent.period">
+                        <input class="form-control form-control-sm date datepicker-input" type="text"
+                            placeholder="yyyy-mm-dd" name="consent_provision_period_end"
+                            *ngIf="consent.provision && consent.period" [(ngModel)]="consent.period!.end" />
+                        <label for="consent_provision_period_end">End</label>
+                        <small class="form-text">Ends at this date in yyyy-mm-dd format.</small>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="col-sm-6">
 
@@ -162,51 +200,22 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <div class=" mt-4" *ngIf="!consent.period">
-                <!-- <h2>Effective From</h2> -->
-                <button class="btn btn-sm btn-primary" (click)="addPeriod()"><span class="bi-calendar"></span>
-                    &nbsp;Add Effective Dates</button><br>
-                <span class="form-text">None are currently set.</span>
 
-            </div>
-            <div *ngIf="consent.period" class="row mt-4">
-
-                <div class="col-sm-12 mb-2"> <button class="btn btn-sm btn-primary" (click)="removePeriod()"
-                        *ngIf="consent.period"><span class="bi-save"></span>&nbsp; Remove Date Restrictions</button>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="form-floating" *ngIf="consent.period">
-                        <input class="input form-control form-control-sm date datepicker-input" type="text"
-                            name="consent_provision_period_start" *ngIf="consent.provision && consent.period"
-                            [(ngModel)]="consent.period.start">
-                        <label for="consent_provision_period_start">Start</label>
-                        <small class="form-text">Begins at this date in yyyy-mm-dd format.</small>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="form-floating" *ngIf="consent.period">
-                        <input class="form-control form-control-sm date datepicker-input" type="text"
-                            placeholder="yyyy-mm-dd" name="consent_provision_period_end"
-                            *ngIf="consent.provision && consent.period" [(ngModel)]="consent.period!.end" />
-                        <label for="consent_provision_period_end">End</label>
-                        <small class="form-text">Ends at this date in yyyy-mm-dd format.</small>
-                    </div>
-                </div>
-            </div>
 
             <div class="row mt-4">
                 <h2>Authorization</h2>
-                <div class="col-sm-6">
-                    <div class="form-floating" >
-                        <input class="form-control form-control-sm" type="text" name="consent_authorization_name" />
-                        <label for="consent_authorization_name">Name</label>
+                <div class="col-sm-8">
+                    <div class="form-floating">
+                        <input class="form-control form-control-sm" type="text" name="consent_authorization_name" [(ngModel)]="authorizationName"/>
+                        <label for="consent_authorization_name">Your Full Legal Name</label>
                         <small class="form-text"></small>
                     </div>
+                    <div class="signature m-2" [innerText]="authorizationName">
+                        
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="form-floating" >
+                <div class="col-sm-4">
+                    <div class="form-floating">
                         <input class="form-control form-control-sm date datepicker-input" type="text"
                             placeholder="yyyy-mm-dd" name="consent_authorization_date" />
                         <label for="consent_authorization_date">Date</label>

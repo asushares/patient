@@ -29,6 +29,8 @@ export class ConsentComponent {
   organizationSelected: Organization[] = [];
   organizationSearching: boolean = false;
 
+  authorizationName = '';
+  
   constructor(private consentService: ConsentService, private organizationService: OrganizationService, private route: ActivatedRoute, private router: Router) {
 
   }
