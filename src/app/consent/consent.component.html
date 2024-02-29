@@ -25,15 +25,7 @@
             </div>
 
             @if (simple_consent.mode == 'custom') {
-            <div class="form-check form-switch mt-3 ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categorySubstanceUse" checked>
-                <label class="form-check-label" for="categorySubstanceUse">Substance Use</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryMentalHealth" checked>
-                <label class="form-check-label" for="categoryMentalHealth">Mental Health</label>
-            </div>
-            <div class="form-check form-switch ms-4">
+            <div class="form-check form-switch ms-4 mt-3">
                 <input class="form-check-input" type="checkbox" role="switch" id="categoryDemographics" checked>
                 <label class="form-check-label" for="categoryDemographics">Demographics</label>
             </div>
@@ -58,6 +50,10 @@
                 <label class="form-check-label" for="categoryMedications">Medications</label>
             </div>
             <div class="form-check form-switch ms-4">
+                <input class="form-check-input" type="checkbox" role="switch" id="categoryMentalHealth" checked>
+                <label class="form-check-label" for="categoryMentalHealth">Mental Health</label>
+            </div>
+            <div class="form-check form-switch ms-4">
                 <input class="form-check-input" type="checkbox" role="switch" id="categorySexualAndReproductiveHealth"
                     checked>
                 <label class="form-check-label" for="categorySexualAndReproductiveHealth">Sexual and Reproductive Health
@@ -68,6 +64,10 @@
                     checked>
                 <label class="form-check-label" for="categorySocialDeterminantsOfHealth">Social Determinants of
                     Health</label>
+            </div>
+            <div class="form-check form-switch ms-4">
+                <input class="form-check-input" type="checkbox" role="switch" id="categorySubstanceUse" checked>
+                <label class="form-check-label" for="categorySubstanceUse">Substance Use</label>
             </div>
             <div class="form-check form-switch ms-4">
                 <input class="form-check-input" type="checkbox" role="switch" id="categoryViolence" checked>
@@ -206,12 +206,13 @@
                 <h2>Authorization</h2>
                 <div class="col-sm-8">
                     <div class="form-floating">
-                        <input class="form-control form-control-sm" type="text" name="consent_authorization_name" [(ngModel)]="authorizationName"/>
+                        <input class="form-control form-control-sm" type="text" name="consent_authorization_name"
+                            [(ngModel)]="authorizationName" />
                         <label for="consent_authorization_name">Your Full Legal Name</label>
                         <small class="form-text"></small>
                     </div>
                     <div class="signature m-2" [innerText]="authorizationName">
-                        
+
                     </div>
                 </div>
                 <div class="col-sm-4">
