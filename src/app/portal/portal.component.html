@@ -1,6 +1,9 @@
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" aria-label="patient portal navbar">
     <div class="container-fluid">
-        <a class="navbar-brand" [routerLink]="['/']"><i class="bi-person"></i> {{patientName()}}'s Patient Portal</a>
+        <a class="navbar-brand" [routerLink]="['/']">
+            <img src="/assets/images/shares-logo.png" alt="ASU SHARES Logo">&nbsp;
+            <i class="bi-person"></i>
+             {{patientName()}}'s Patient Portal</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
