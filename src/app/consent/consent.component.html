@@ -25,54 +25,9 @@
             </div>
 
             @if (simple_consent.mode == 'custom') {
-            <div class="form-check form-switch ms-4 mt-3">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryDemographics" checked>
-                <label class="form-check-label" for="categoryDemographics">Demographics</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryDiagnoses" checked>
-                <label class="form-check-label" for="categoryDiagnoses">Diagnoses</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryDisabilities" checked>
-                <label class="form-check-label" for="categoryDisabilities">Disabilities</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryGenetics" checked>
-                <label class="form-check-label" for="categoryGenetics">Genetics</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryInfectiousDiseases" checked>
-                <label class="form-check-label" for="categoryInfectiousDiseases">Infectious Diseases</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryMedications" checked>
-                <label class="form-check-label" for="categoryMedications">Medications</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryMentalHealth" checked>
-                <label class="form-check-label" for="categoryMentalHealth">Mental Health</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categorySexualAndReproductiveHealth"
-                    checked>
-                <label class="form-check-label" for="categorySexualAndReproductiveHealth">Sexual and Reproductive Health
-                </label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categorySocialDeterminantsOfHealth"
-                    checked>
-                <label class="form-check-label" for="categorySocialDeterminantsOfHealth">Social Determinants of
-                    Health</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categorySubstanceUse" checked>
-                <label class="form-check-label" for="categorySubstanceUse">Substance Use</label>
-            </div>
-            <div class="form-check form-switch ms-4">
-                <input class="form-check-input" type="checkbox" role="switch" id="categoryViolence" checked>
-                <label class="form-check-label" for="categoryViolence">Violence</label>
-            </div>
+                @for (category of categories; track category.id) {
+                    <app-consent-category-form-check [category]="category" [isFirst]="$first"></app-consent-category-form-check>
+                }
             }
 
             <div class=" mt-4" *ngIf="!consent.period">

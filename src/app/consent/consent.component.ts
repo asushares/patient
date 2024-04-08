@@ -8,14 +8,18 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
+import { ConsentCategoryFormCheckComponent } from '../consent-category-form-check/consent-category-form-check.component';
 
 @Component({
   selector: 'app-consent',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConsentCategoryFormCheckComponent],
   templateUrl: './consent.component.html',
   styleUrl: './consent.component.scss'
 })
+/**
+ * Represents the Consent Component.
+ */
 export class ConsentComponent {
 
   consent_id: string | null = null;
@@ -30,15 +34,36 @@ export class ConsentComponent {
   organizationSearching: boolean = false;
 
   authorizationName = '';
+
+  // Categories for consent
+  categories = [
+    { id: 'categoryDemographics', label: 'Demographics' },
+    { id: 'categoryDiagnoses', label: 'Diagnoses' },
+    { id: 'categoryDisabilities', label: 'Disabilities' },
+    { id: 'categoryGenetics', label: 'Genetics' },
+    { id: 'categoryInfectiousDiseases', label: 'Infectious Diseases' },
+    { id: 'categoryMedications', label: 'Medications' },
+    { id: 'categoryMentalHealth', label: 'Mental Health' },
+    { id: 'categorySexualAndReproductiveHealth', label: 'Sexual and Reproductive Health' },
+    { id: 'categorySocialDeterminantsOfHealth', label: 'Social Determinants of Health' },
+    { id: 'categorySubstanceUse', label: 'Substance Use' },
+    { id: 'categoryViolence', label: 'Violence' }
+  ];
   
   constructor(private consentService: ConsentService, private organizationService: OrganizationService, private route: ActivatedRoute, private router: Router) {
 
   }
 
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   */
   ngOnDestroy(): void {
     this.consentService.clear();
   }
 
+  /**
+   * Lifecycle hook that is called after the component is initialized.
+   */
   ngOnInit(): void {
     this.consent_id = this.route.snapshot.paramMap.get('consent_id');
     if (this.consent_id) {
@@ -73,7 +98,9 @@ export class ConsentComponent {
     }
   }
 
-
+  /**
+   * Adds a period to the consent.
+   */
   addPeriod() {
     if (this.consent) {
       const tomorrow = new Date(Date.now() + (24 * 60 * 60 * 1000));
@@ -83,13 +110,19 @@ export class ConsentComponent {
     }
   }
 
+  /**
+   * Removes the period from the consent.
+   */
   removePeriod() {
     if (this.consent) {
       delete this.consent.period;
     }
   }
 
-
+  /**
+   * Performs a search for organizations based on the provided text.
+   * @param text The search text.
+   */
   organizationSearch(text: string) {
     this.organizationSearching = true;
     this.organizationService.search(this.organizationSearchText).subscribe(b => {
@@ -98,6 +131,10 @@ export class ConsentComponent {
     });
   }
 
+  /**
+   * Selects an organization and adds it to the consent.
+   * @param o The organization to select.
+   */
   selectOrganization(o: Organization) {
     if (this.consent) {
       this.organizationSelected.push(o);
@@ -105,6 +142,10 @@ export class ConsentComponent {
     }
   }
 
+  /**
+   * Removes an organization from the consent.
+   * @param org The organization to remove.
+   */
   removeOrganization(org: Organization) {
     if (this.consent) {
       if (this.consent.controller !== undefined) {
@@ -122,6 +163,11 @@ export class ConsentComponent {
     }
   }
 
+  /**
+   * Retrieves the organization for the given reference.
+   * @param ref The reference string.
+   * @returns The organization or null if not found.
+   */
   organizationForReference(ref: string): Organization | null {
     let org = null;
     this.organizationSelected.forEach(o => {
@@ -133,6 +179,11 @@ export class ConsentComponent {
     return org;
   }
 
+  /**
+   * Checks if the given organization is selected.
+   * @param o The organization to check.
+   * @returns True if the organization is selected, false otherwise.
+   */
   isSelectedOrganization(o: Organization): boolean {
     let selected = false;
     this.organizationSelected.forEach(n => {
@@ -142,6 +193,4 @@ export class ConsentComponent {
     });
     return selected;
   }
-
-
 }
