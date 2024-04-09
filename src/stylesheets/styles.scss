@@ -1,4 +1,9 @@
 body {
     background: url(/assets/images/textures/crossword.png) repeat center center fixed;
-
+    .form-check-popover {
+        --bs-popover-bg: #e5a09d;
+        --bs-popover-body-color: #290806;
+        --bs-popover-body-font-size: 1.2em;
+        font-weight: bolder
+    }
 }
