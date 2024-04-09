@@ -1,0 +1,27 @@
+<div
+  class="form-check form-switch ms-4"
+  [ngClass]="{ 'mt-3': isFirst === true }"
+>
+  <input
+    class="form-check-input"
+    type="checkbox"
+    role="switch"
+    [id]="category.id"
+    checked
+  />
+  <label class="form-check-label" [for]="category.id">{{
+    category.label
+  }}</label>
+  <i
+    class="form-check-popover-icon bi bi-info-circle-fill ms-1"
+    data-bs-custom-class="form-check-popover"
+    data-bs-html="true"
+    data-bs-container="body"
+    data-bs-toggle="popover"
+    data-bs-placement="right"
+    data-bs-title="The following information will not be shared with the organizations you specify:"
+    [attr.data-bs-content]="
+      '<ul><li>' + category.contentArr.join('</li><li>') + '</li></ul>'
+    "
+  ></i>
+</div>
