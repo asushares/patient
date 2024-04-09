@@ -15,9 +15,13 @@
   <i
     class="form-check-popover-icon bi bi-info-circle-fill ms-1"
     data-bs-custom-class="form-check-popover"
+    data-bs-html="true"
     data-bs-container="body"
     data-bs-toggle="popover"
     data-bs-placement="right"
-    data-bs-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus."
+    data-bs-title="The following information will not be shared with the organizations you specify:"
+    [attr.data-bs-content]="
+      '<ul><li>' + category.contentArr.join('</li><li>') + '</li></ul>'
+    "
   ></i>
 </div>

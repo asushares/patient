@@ -13,6 +13,7 @@ export class ConsentCategoryFormCheckComponent implements AfterViewInit {
   @Input() category!: {
     id: string;
     label: string;
+    contentArr: string[];
   };
   @Input() isFirst!: boolean;
 

@@ -15,18 +15,16 @@ import { ConsentCategoryFormCheckComponent } from '../consent-category-form-chec
   standalone: true,
   imports: [CommonModule, FormsModule, ConsentCategoryFormCheckComponent],
   templateUrl: './consent.component.html',
-  styleUrl: './consent.component.scss'
+  styleUrl: './consent.component.scss',
 })
 /**
  * Represents the Consent Component.
  */
 export class ConsentComponent {
-
   consent_id: string | null = null;
   consent: Consent | null = null;
 
   simple_consent: SimpleConsent = new SimpleConsent(); // FIXME Create from real data instead.
-
 
   organizationSearchText = '';
   organizationList: Bundle<Organization> | null = null;
@@ -37,22 +35,52 @@ export class ConsentComponent {
 
   // Categories for consent
   categories = [
-    { id: 'categoryDemographics', label: 'Demographics' },
-    { id: 'categoryDiagnoses', label: 'Diagnoses' },
-    { id: 'categoryDisabilities', label: 'Disabilities' },
-    { id: 'categoryGenetics', label: 'Genetics' },
-    { id: 'categoryInfectiousDiseases', label: 'Infectious Diseases' },
-    { id: 'categoryMedications', label: 'Medications' },
-    { id: 'categoryMentalHealth', label: 'Mental Health' },
-    { id: 'categorySexualAndReproductiveHealth', label: 'Sexual and Reproductive Health' },
-    { id: 'categorySocialDeterminantsOfHealth', label: 'Social Determinants of Health' },
-    { id: 'categorySubstanceUse', label: 'Substance Use' },
-    { id: 'categoryViolence', label: 'Violence' }
+    { id: 'categoryDemographics', label: 'Demographics', contentArr: [] },
+    { id: 'categoryDiagnoses', label: 'Diagnoses', contentArr: [] },
+    { id: 'categoryDisabilities', label: 'Disabilities', contentArr: [] },
+    { id: 'categoryGenetics', label: 'Genetics', contentArr: [] },
+    {
+      id: 'categoryInfectiousDiseases',
+      label: 'Infectious Diseases',
+      contentArr: [],
+    },
+    { id: 'categoryMedications', label: 'Medications', contentArr: [] },
+    { id: 'categoryMentalHealth', label: 'Mental Health', contentArr: [] },
+    {
+      id: 'categorySexualAndReproductiveHealth',
+      label: 'Sexual and Reproductive Health',
+      contentArr: [],
+    },
+    {
+      id: 'categorySocialDeterminantsOfHealth',
+      label: 'Social Determinants of Health',
+      contentArr: [],
+    },
+    {
+      id: 'categorySubstanceUse',
+      label: 'Substance Use',
+      contentArr: [
+        'Methamphetamine intoxication',
+        'Family history-Alcohol abuse',
+        'Family history-Drug abuse',
+        'Methadone [Presence] in Urine by Screen method',
+        'Morphine, lo other',
+        'Oplates screen, urine(positive)',
+        'Alcohol screening (negative)',
+        'History of domestic altercation',
+        'Hydrocodone bitartrate 5 mg and paracetamol 325 mg oral tablet',
+        'Estazolam 1 mg oral tablet',
+      ],
+    },
+    { id: 'categoryViolence', label: 'Violence', contentArr: [] },
   ];
-  
-  constructor(private consentService: ConsentService, private organizationService: OrganizationService, private route: ActivatedRoute, private router: Router) {
 
-  }
+  constructor(
+    private consentService: ConsentService,
+    private organizationService: OrganizationService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   /**
    * Lifecycle hook that is called when the component is destroyed.
@@ -67,33 +95,36 @@ export class ConsentComponent {
   ngOnInit(): void {
     this.consent_id = this.route.snapshot.paramMap.get('consent_id');
     if (this.consent_id) {
-      this.consentService.load(this.consent_id)
+      this.consentService.load(this.consent_id);
       this.consentService.current.subscribe({
-        next: d => {
+        next: (d) => {
           this.consent = d;
           if (d) {
             console.log('Loaded consent.');
           } else {
-            console.log('Consent data null. Either an intentional cache clearance or not loaded yet. No worries.');
+            console.log(
+              'Consent data null. Either an intentional cache clearance or not loaded yet. No worries.'
+            );
           }
-          this.consent?.controller?.forEach(c => {
+          this.consent?.controller?.forEach((c) => {
             // console.log("REF: " + c.reference);
             console.log(c.reference?.match(/Organization\/.+/));
-            
+
             if (c.reference?.match(/Organization\/.+/) != null) {
               let id = c.reference.substring('Organization/'.length);
               // console.log("CID: " + id);
               this.organizationService.get(id).subscribe({
-                next: o => {
+                next: (o) => {
                   this.organizationSelected.push(o);
-                }
+                },
               });
             }
           });
-        }, error: e => {
+        },
+        error: (e) => {
           console.error('Failed to load consent!');
           console.error(e);
-        }
+        },
       });
     }
   }
@@ -103,10 +134,18 @@ export class ConsentComponent {
    */
   addPeriod() {
     if (this.consent) {
-      const tomorrow = new Date(Date.now() + (24 * 60 * 60 * 1000));
-      tomorrow.toDateString()
-      const tomorrow_str = tomorrow.getFullYear() + '-' + tomorrow.getMonth() + '-' + tomorrow.getDay();
-      this.consent.period = { start: new Date().toISOString().split('T')[0], end: tomorrow.toISOString().split('T')[0] };
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      tomorrow.toDateString();
+      const tomorrow_str =
+        tomorrow.getFullYear() +
+        '-' +
+        tomorrow.getMonth() +
+        '-' +
+        tomorrow.getDay();
+      this.consent.period = {
+        start: new Date().toISOString().split('T')[0],
+        end: tomorrow.toISOString().split('T')[0],
+      };
     }
   }
 
@@ -125,10 +164,12 @@ export class ConsentComponent {
    */
   organizationSearch(text: string) {
     this.organizationSearching = true;
-    this.organizationService.search(this.organizationSearchText).subscribe(b => {
-      this.organizationList = b;
-      this.organizationSearching = false;
-    });
+    this.organizationService
+      .search(this.organizationSearchText)
+      .subscribe((b) => {
+        this.organizationList = b;
+        this.organizationSearching = false;
+      });
   }
 
   /**
@@ -138,7 +179,10 @@ export class ConsentComponent {
   selectOrganization(o: Organization) {
     if (this.consent) {
       this.organizationSelected.push(o);
-      this.consent.controller?.push({ type: 'Organization', reference: 'Organization/' + o.id });
+      this.consent.controller?.push({
+        type: 'Organization',
+        reference: 'Organization/' + o.id,
+      });
     }
   }
 
@@ -150,7 +194,10 @@ export class ConsentComponent {
     if (this.consent) {
       if (this.consent.controller !== undefined) {
         for (let i = 0; i < this.consent.controller.length; i++) {
-          if ('Organization/' + org.id == this.consent.controller[i].reference) {
+          if (
+            'Organization/' + org.id ==
+            this.consent.controller[i].reference
+          ) {
             this.consent.controller.splice(i, 1);
           }
         }
@@ -170,8 +217,8 @@ export class ConsentComponent {
    */
   organizationForReference(ref: string): Organization | null {
     let org = null;
-    this.organizationSelected.forEach(o => {
-      // console.log("REF: " + ref);      
+    this.organizationSelected.forEach((o) => {
+      // console.log("REF: " + ref);
       if ('Organization/' + o.id == ref) {
         org = o;
       }
@@ -186,7 +233,7 @@ export class ConsentComponent {
    */
   isSelectedOrganization(o: Organization): boolean {
     let selected = false;
-    this.organizationSelected.forEach(n => {
+    this.organizationSelected.forEach((n) => {
       if (n.id == o.id) {
         selected = true;
       }
