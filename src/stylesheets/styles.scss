@@ -1,14 +1,15 @@
 body {
-    background: url(/assets/images/textures/crossword.png) repeat center center fixed;
-    .form-check-popover {
-        --bs-popover-header-bg: #e5a09d;
-        --bs-popover-header-color: #290806;
-        --bs-popover-bg: #e5a09d;
-        --bs-popover-body-color: #290806;
-        --bs-popover-max-width: 100%;
-        font-weight: bolder;
-        .popover-header {
-            border-bottom: 0;
-        }
+  background: url(/assets/images/textures/crossword.png) repeat center center
+    fixed;
+  .form-check-popover {
+    --bs-popover-header-bg: #e5a09d;
+    --bs-popover-header-color: #290806;
+    --bs-popover-bg: #e5a09d;
+    --bs-popover-body-color: #290806;
+    --bs-popover-max-width: 100%;
+    font-weight: bolder;
+    .popover-header {
+      border-bottom: 0;
     }
+  }
 }

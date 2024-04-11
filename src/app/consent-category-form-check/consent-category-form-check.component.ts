@@ -24,9 +24,9 @@ export class ConsentCategoryFormCheckComponent implements AfterViewInit {
     // Hide all other popovers when one is shown
     popoverIcon?.addEventListener('show.bs.popover', () => {
       const allOtherIcons = document.querySelectorAll(
-        `.form-check-input:not(#${this.category.id}) ~ i`
+        `.form-check-input:not(#${this.category.id}) ~ i`,
       );
-      allOtherIcons.forEach((icon) => {
+      allOtherIcons.forEach(icon => {
         const popover = Popover.getInstance(icon);
         popover?.hide();
       });

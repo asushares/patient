@@ -1,14 +1,12 @@
 <div
   class="form-check form-switch ms-4"
-  [ngClass]="{ 'mt-3': isFirst === true }"
->
+  [ngClass]="{ 'mt-3': isFirst === true }">
   <input
     class="form-check-input"
     type="checkbox"
     role="switch"
     [id]="category.id"
-    checked
-  />
+    checked />
   <label class="form-check-label" [for]="category.id">{{
     category.label
   }}</label>
@@ -22,6 +20,5 @@
     data-bs-title="The following information will not be shared with the organizations you specify:"
     [attr.data-bs-content]="
       '<ul><li>' + category.contentArr.join('</li><li>') + '</li></ul>'
-    "
-  ></i>
+    "></i>
 </div>

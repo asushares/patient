@@ -1,6 +1,6 @@
 // Author: Preston Lee
 
-import { Component } from '@angular/core';
+import { Component, type OnInit, type OnDestroy } from '@angular/core';
 import { Bundle, Consent, Organization } from 'fhir/r5';
 import { ConsentService } from '../consent.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { ConsentCategoryFormCheckComponent } from '../consent-category-form-chec
 /**
  * Represents the Consent Component.
  */
-export class ConsentComponent {
+export class ConsentComponent implements OnInit, OnDestroy {
   consent_id: string | null = null;
   consent: Consent | null = null;
 
@@ -79,7 +79,7 @@ export class ConsentComponent {
     private consentService: ConsentService,
     private organizationService: OrganizationService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   /**
@@ -97,31 +97,31 @@ export class ConsentComponent {
     if (this.consent_id) {
       this.consentService.load(this.consent_id);
       this.consentService.current.subscribe({
-        next: (d) => {
+        next: d => {
           this.consent = d;
           if (d) {
             console.log('Loaded consent.');
           } else {
             console.log(
-              'Consent data null. Either an intentional cache clearance or not loaded yet. No worries.'
+              'Consent data null. Either an intentional cache clearance or not loaded yet. No worries.',
             );
           }
-          this.consent?.controller?.forEach((c) => {
+          this.consent?.controller?.forEach(c => {
             // console.log("REF: " + c.reference);
             console.log(c.reference?.match(/Organization\/.+/));
 
             if (c.reference?.match(/Organization\/.+/) != null) {
-              let id = c.reference.substring('Organization/'.length);
+              const id = c.reference.substring('Organization/'.length);
               // console.log("CID: " + id);
               this.organizationService.get(id).subscribe({
-                next: (o) => {
+                next: o => {
                   this.organizationSelected.push(o);
                 },
               });
             }
           });
         },
-        error: (e) => {
+        error: e => {
           console.error('Failed to load consent!');
           console.error(e);
         },
@@ -136,7 +136,7 @@ export class ConsentComponent {
     if (this.consent) {
       const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
       tomorrow.toDateString();
-      const tomorrow_str =
+      const _tomorrow_str =
         tomorrow.getFullYear() +
         '-' +
         tomorrow.getMonth() +
@@ -162,11 +162,11 @@ export class ConsentComponent {
    * Performs a search for organizations based on the provided text.
    * @param text The search text.
    */
-  organizationSearch(text: string) {
+  organizationSearch(_text: string) {
     this.organizationSearching = true;
     this.organizationService
       .search(this.organizationSearchText)
-      .subscribe((b) => {
+      .subscribe(b => {
         this.organizationList = b;
         this.organizationSearching = false;
       });
@@ -217,7 +217,7 @@ export class ConsentComponent {
    */
   organizationForReference(ref: string): Organization | null {
     let org = null;
-    this.organizationSelected.forEach((o) => {
+    this.organizationSelected.forEach(o => {
       // console.log("REF: " + ref);
       if ('Organization/' + o.id == ref) {
         org = o;
@@ -233,7 +233,7 @@ export class ConsentComponent {
    */
   isSelectedOrganization(o: Organization): boolean {
     let selected = false;
-    this.organizationSelected.forEach((n) => {
+    this.organizationSelected.forEach(n => {
       if (n.id == o.id) {
         selected = true;
       }

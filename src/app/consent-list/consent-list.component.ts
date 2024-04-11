@@ -6,25 +6,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConsentSearchField } from '../consent.search.field';
 import { Bundle, Consent, Patient } from 'fhir/r5';
-import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-consent-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './consent-list.component.html',
-  styleUrl: './consent-list.component.scss'
+  styleUrl: './consent-list.component.scss',
 })
 export class ConsentListComponent implements OnInit {
-
-
   public sortTypes = ConsentSearchField;
   public bundle: Bundle<Consent> | null = null;
   public patient: Patient | null = null;
 
-  constructor(private patientService: PatientService, protected consentService: ConsentService, private route: ActivatedRoute, private router: Router) {
-
-  }
+  constructor(
+    private patientService: PatientService,
+    protected consentService: ConsentService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
   ngOnInit(): void {
     this.patientService.current.subscribe({
       next: d => {
@@ -35,20 +35,24 @@ export class ConsentListComponent implements OnInit {
         // } else {
         //   // console.log('Patient data null. Either an intentional cache clearance or not loaded yet. No worries.');
         // }
-      }, error: e => {
+      },
+      error: _e => {
         // console.error('Failed to load patient!');
         // console.error(e);
-      }
+      },
     });
   }
 
-
   hasPreviousPage() {
-    return this.bundle?.link?.some(l => { return l.relation == 'prev' });
+    return this.bundle?.link?.some(l => {
+      return l.relation == 'prev';
+    });
   }
 
-  hasNextPage(): any {
-    return this.bundle?.link?.some(l => { return l.relation == 'next' });
+  hasNextPage() {
+    return this.bundle?.link?.some(l => {
+      return l.relation == 'next';
+    });
   }
 
   currentOffset() {
@@ -74,10 +78,10 @@ export class ConsentListComponent implements OnInit {
 
   sortBy(field: ConsentSearchField) {
     this.consentService.sort = field;
-    this.consentService.order = this.consentService.order == 'asc' ? 'desc' : 'asc';
+    this.consentService.order =
+      this.consentService.order == 'asc' ? 'desc' : 'asc';
     this.reload();
   }
-
 
   reload() {
     if (this.patient?.id) {
@@ -88,12 +92,11 @@ export class ConsentListComponent implements OnInit {
         // this.bundle.entry.push({resource: BrowserComponent.CONSENT_1});
         if (this.bundle.entry) {
           this.bundle.entry.forEach(e => {
-
             // Cache the names of the patients
             if (e.resource?.subject?.reference) {
-              let ref = e.resource?.subject?.reference;
+              const ref = e.resource?.subject?.reference;
               if (ref.match('^Patient/')) {
-                let id = ref.substring('Patient/'.length);
+                const id = ref.substring('Patient/'.length);
                 this.patientService.summary(id).subscribe(p => {
                   // this.patientSummaries[ref] = p;
                   // console.log('Patient summary returned: ');
@@ -101,17 +104,15 @@ export class ConsentListComponent implements OnInit {
                 });
               }
             }
-
           });
         }
         console.log(this.bundle);
-
       });
     }
   }
 
   formatBundle() {
-    let json = JSON.stringify(this.bundle, null, "\t");
+    const json = JSON.stringify(this.bundle, null, '\t');
     console.log(json);
     return json;
   }
@@ -123,12 +124,11 @@ export class ConsentListComponent implements OnInit {
         if (consent.id == this.bundle!.entry![i].resource?.id) {
           index = i;
         }
-      })
+      });
       if (index >= 0) {
         this.bundle!.entry!.splice(index, 1);
       }
     }
-
   }
 
   delete(consent: Consent) {
@@ -137,12 +137,24 @@ export class ConsentListComponent implements OnInit {
         console.log(oo);
         this.removeConsent(consent);
         // this.toastService.showSuccessToast('Consent Deleted', 'The consent has been deleted.');
-      }, error: error => {
+      },
+      error: error => {
         console.log(error);
         console.log(error.error);
         // this.toastService.showErrorToast('Consent Deletion Failed', 'The server refused to delete the consent document.');
-      }
+      },
     });
   }
 
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key == 'ArrowLeft') {
+      if (this.hasPreviousPage()) {
+        this.setOffset(this.currentOffset() - this.pageSize());
+      }
+    } else if (event.key == 'ArrowRight') {
+      if (this.hasNextPage()) {
+        this.setOffset(this.currentOffset() + this.pageSize());
+      }
+    }
+  }
 }
