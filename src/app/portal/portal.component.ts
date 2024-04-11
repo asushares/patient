@@ -8,16 +8,17 @@ import { Patient } from 'fhir/r5';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './portal.component.html',
-  styleUrl: './portal.component.scss'
+  styleUrl: './portal.component.scss',
 })
 export class PortalComponent implements OnInit, OnDestroy {
-
   patient_id: string | null = null;
   patient: Patient | null = null;
 
-  constructor(private patientService: PatientService, private route: ActivatedRoute, private router: Router) {
-
-  }
+  constructor(
+    private patientService: PatientService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnDestroy(): void {
     this.patientService.clear();
@@ -26,23 +27,25 @@ export class PortalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.patient_id = this.route.snapshot.paramMap.get('patient_id');
     if (this.patient_id) {
-      this.patientService.load(this.patient_id)
+      this.patientService.load(this.patient_id);
       this.patientService.current.subscribe({
         next: d => {
           this.patient = d;
           if (d) {
             console.log('Loaded patient.');
           } else {
-            console.log('Patient data null. Either an intentional cache clearance or not loaded yet. No worries.');
+            console.log(
+              'Patient data null. Either an intentional cache clearance or not loaded yet. No worries.',
+            );
           }
-        }, error: e => {
+        },
+        error: e => {
           console.error('Failed to load patient!');
           console.error(e);
-        }
+        },
       });
     }
   }
-
 
   // patientGivenName(): string {
   //   let n = '';
@@ -52,11 +55,10 @@ export class PortalComponent implements OnInit, OnDestroy {
   //   return n;
   // }
 
-
   patientName(): string {
     let name = '(No Name)';
     if (this.patient?.name && this.patient.name.length > 0) {
-      let tmp = [];
+      const tmp = [];
       if (this.patient.name[0].given) {
         tmp.push(...this.patient.name[0].given);
       }
@@ -67,5 +69,4 @@ export class PortalComponent implements OnInit, OnDestroy {
     }
     return name;
   }
-  
 }

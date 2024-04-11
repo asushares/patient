@@ -1,12 +1,12 @@
 .signature {
-    font-family: 'Brush Script MT', cursive;
-    font-size: 2em;
+  font-family: "Brush Script MT", cursive;
+  font-size: 2em;
 }
 
 :host ::ng-deep .form-check {
-    i.form-check-popover-icon {
-        font-size: 0.8rem; 
-        color: cornflowerblue; 
-        cursor: pointer;
-    }
+  i.form-check-popover-icon {
+    font-size: 0.8rem;
+    color: cornflowerblue;
+    cursor: pointer;
+  }
 }

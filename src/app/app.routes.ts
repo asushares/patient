@@ -8,18 +8,17 @@ import { ConsentListComponent } from './consent-list/consent-list.component';
 import { ConsentComponent } from './consent/consent.component';
 
 export const routes: Routes = [
-    {
-        path: '',
-        component: LaunchComponent
-    },
-    {
-        path: 'portal/:patient_id',
-        component: PortalComponent,
-        children: [
-            { path: 'summary', component: SummaryComponent },
-            { path: 'consent-list', component: ConsentListComponent },
-            { path: 'consent/:consent_id', component: ConsentComponent }
-
-        ]
-    }
-]
+  {
+    path: '',
+    component: LaunchComponent,
+  },
+  {
+    path: 'portal/:patient_id',
+    component: PortalComponent,
+    children: [
+      { path: 'summary', component: SummaryComponent },
+      { path: 'consent-list', component: ConsentListComponent },
+      { path: 'consent/:consent_id', component: ConsentComponent },
+    ],
+  },
+];

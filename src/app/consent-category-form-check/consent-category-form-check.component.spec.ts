@@ -8,10 +8,9 @@ describe('ConsentCategoryFormCheckComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConsentCategoryFormCheckComponent]
-    })
-    .compileComponents();
-    
+      imports: [ConsentCategoryFormCheckComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ConsentCategoryFormCheckComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

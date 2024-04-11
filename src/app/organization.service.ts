@@ -6,45 +6,58 @@ import { BaseService } from './base.service';
 
 @Injectable()
 export class OrganizationService extends BaseService {
+  public static ORGANIZATION_PATH = '/Organization';
 
+  url(): string {
+    return this.backendService.url + OrganizationService.ORGANIZATION_PATH;
+  }
 
-	public static ORGANIZATION_PATH = '/Organization';
+  index() {
+    const b = this.http.get<Bundle<Organization>>(this.url(), {
+      headers: this.backendService.headers(),
+    });
+    return b;
+  }
 
-	url(): string {
-		return this.backendService.url + OrganizationService.ORGANIZATION_PATH;
-	}
+  urlFor(id: string) {
+    return this.backendService.url + '/Organization/' + id;
+  }
 
-	index() {
-		let b = this.http.get<Bundle<Organization>>(this.url(), { headers: this.backendService.headers() });
-		return b;
-	}
+  get(id: string) {
+    return this.http.get<Organization>(this.urlFor(id), {
+      headers: this.backendService.headers(),
+    });
+  }
 
-	urlFor(id: string) {
-		return this.backendService.url + '/Organization/' + id;
-	}
+  post(organization: Organization) {
+    return this.http.post<Organization>(
+      this.url(),
+      JSON.stringify(organization),
+      { headers: this.backendService.headers() },
+    );
+  }
 
-	get(id: string) {
-		return this.http.get<Organization>(this.urlFor(id), { headers: this.backendService.headers() });
-	}
+  put(organization: Organization) {
+    return this.http.put<Organization>(
+      this.urlFor(organization.id!),
+      JSON.stringify(organization),
+      { headers: this.backendService.headers() },
+    );
+  }
 
-	post(organization: Organization) {
-		return this.http.post<Organization>(this.url(), JSON.stringify(organization), { headers: this.backendService.headers() });
-	}
+  delete(organization: Organization) {
+    return this.http.delete<Organization>(this.urlFor(organization.id!), {
+      headers: this.backendService.headers(),
+    });
+  }
 
-	put(organization: Organization) {
-		return this.http.put<Organization>(this.urlFor(organization.id!), JSON.stringify(organization), { headers: this.backendService.headers() });
-	}
+  search(text: string) {
+    return this.http.get<Bundle<Organization>>(
+      this.url() + '?phonetic=' + text,
+    );
+  }
 
-	delete(organization: Organization) {
-		return this.http.delete<Organization>(this.urlFor(organization.id!), { headers: this.backendService.headers() });
-	}
-
-	search(text: string) {
-		return this.http.get<Bundle<Organization>>(this.url() + '?phonetic=' + text);
-	}
-
-	summary(id: string) {
-		return this.http.get<Organization>(this.urlFor(id) + '?_summary=true');
-	}
-
+  summary(id: string) {
+    return this.http.get<Organization>(this.urlFor(id) + '?_summary=true');
+  }
 }

@@ -13,13 +13,22 @@ import { OrganizationService } from './organization.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, FormsModule, HttpClientModule],
-  providers: [PatientService, ConsentService, OrganizationService, BackendService],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterModule,
+    FormsModule,
+    HttpClientModule,
+  ],
+  providers: [
+    PatientService,
+    ConsentService,
+    OrganizationService,
+    BackendService,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
-
   title = 'Patient Portal';
-
 }
