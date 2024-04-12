@@ -9,6 +9,7 @@ import { PatientService } from './patient.service';
 import { BackendService } from './backend.service';
 import { ConsentService } from './consent.service';
 import { OrganizationService } from './organization.service';
+import { CDSService } from './cds.service';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ import { OrganizationService } from './organization.service';
     HttpClientModule,
   ],
   providers: [
+    CDSService,
     PatientService,
     ConsentService,
     OrganizationService,
