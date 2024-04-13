@@ -43,7 +43,11 @@
         @for (category of categories; track category.id) {
           <app-consent-category-form-check
             [category]="category"
-            [isFirst]="$first"></app-consent-category-form-check>
+            [isFirst]="$first"
+            [previewListString]="previewListString"
+            (refreshPreviewList)="
+              updatePreviewList($event)
+            "></app-consent-category-form-check>
         }
       }
 
