@@ -1,4 +1,13 @@
-import { Component, Input, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  AfterViewInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Popover } from 'bootstrap';
 
@@ -9,13 +18,31 @@ import { Popover } from 'bootstrap';
   templateUrl: './consent-category-form-check.component.html',
   styleUrl: './consent-category-form-check.component.scss',
 })
-export class ConsentCategoryFormCheckComponent implements AfterViewInit {
+export class ConsentCategoryFormCheckComponent
+  implements AfterViewInit, OnDestroy, OnChanges
+{
   @Input() category!: {
     id: string;
     label: string;
     contentArr: string[];
   };
   @Input() isFirst!: boolean;
+  @Input() previewListString!: string;
+  @Output() refreshPreviewList = new EventEmitter<[string, boolean]>();
+
+  popoverTitle =
+    'The following information will not be shared with the organizations you specify:';
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['previewListString']) {
+      const popoverIcon = document.querySelector(`#${this.category.id} ~ i`);
+      const popover = Popover.getInstance(popoverIcon!);
+      popover?.setContent({
+        '.popover-header': this.popoverTitle,
+        '.popover-body': this.previewListString,
+      });
+    }
+  }
 
   ngAfterViewInit() {
     // Initialize Bootstrap popover
@@ -30,6 +57,15 @@ export class ConsentCategoryFormCheckComponent implements AfterViewInit {
         const popover = Popover.getInstance(icon);
         popover?.hide();
       });
+      const categoryId = this.category.id;
+      const checked =
+        popoverIcon.closest('div')?.querySelector('input')?.checked ?? false;
+      this.refreshPreviewList.emit([categoryId, checked]);
     });
+  }
+
+  ngOnDestroy() {
+    const popover = document.querySelector('.popover');
+    popover?.remove();
   }
 }

@@ -17,8 +17,6 @@
     data-bs-container="body"
     data-bs-toggle="popover"
     data-bs-placement="right"
-    data-bs-title="The following information will not be shared with the organizations you specify:"
-    [attr.data-bs-content]="
-      '<ul><li>' + category.contentArr.join('</li><li>') + '</li></ul>'
-    "></i>
+    [attr.data-bs-title]="popoverTitle"
+    [attr.data-bs-content]="previewListString"></i>
 </div>

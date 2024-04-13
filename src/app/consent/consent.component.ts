@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
 import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
 import { ConsentCategoryFormCheckComponent } from '../consent-category-form-check/consent-category-form-check.component';
+import { CDSService } from '../cds.service';
+// used to test
+import requestBody from './example-request-permit.json';
 
 @Component({
   selector: 'app-consent',
@@ -34,6 +37,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
   authorizationName = '';
 
   // Categories for consent
+  previewList: [string, boolean][] = [];
   categories = [
     { id: 'categoryDemographics', label: 'Demographics', contentArr: [] },
     { id: 'categoryDiagnoses', label: 'Diagnoses', contentArr: [] },
@@ -75,7 +79,25 @@ export class ConsentComponent implements OnInit, OnDestroy {
     { id: 'categoryViolence', label: 'Violence', contentArr: [] },
   ];
 
+  get previewListString() {
+    return (
+      '<ul><li>' +
+      (this.previewList ?? [])
+        .map(([id, permit]) => {
+          // const content = this.category.contentArr.find(
+          //   content => content.split(' ')[0] === id,
+          // );
+          return permit
+            ? `<span class="text-success">${id}</span>`
+            : `<span class="text-danger text-decoration-line-through">${id}</span>`;
+        })
+        .join('</li><li>') +
+      '</li></ul>'
+    );
+  }
+
   constructor(
+    private cdsService: CDSService,
     private consentService: ConsentService,
     private organizationService: OrganizationService,
     private route: ActivatedRoute,
@@ -239,5 +261,25 @@ export class ConsentComponent implements OnInit, OnDestroy {
       }
     });
     return selected;
+  }
+
+  updatePreviewList([category, _checked]: [string, boolean]): void {
+    this.cdsService.postHook({
+      body: requestBody, // temporarily use an example json to do the test
+      'cds-redaction-enabled': 'false',
+    });
+
+    this.cdsService.current.subscribe({
+      next: _d => {
+        this.previewList = [
+          [`${category} Test Permit Label ${Date().toLocaleUpperCase()}`, true],
+          [`${category} Test Deny Label ${Date().toLocaleUpperCase()}`, false],
+        ];
+      },
+      error: e => {
+        console.error('Error posting hook.');
+        console.error(e);
+      },
+    });
   }
 }
