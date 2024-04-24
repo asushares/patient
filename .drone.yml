@@ -11,9 +11,12 @@ steps:
     image: plugins/docker
     settings:
       repo:
-        from_secret:  docker_repository
+        from_secret: docker_repository
       tags: [latest]
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
+trigger:
+  branch:
+    - master
