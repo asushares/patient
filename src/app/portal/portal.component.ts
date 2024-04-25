@@ -1,18 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  NgbCollapseModule,
+  NgbDropdownModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { PatientService } from '../patient.service';
 import { Patient } from 'fhir/r5';
 
 @Component({
   selector: 'app-portal',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, NgbCollapseModule, NgbDropdownModule],
   templateUrl: './portal.component.html',
   styleUrl: './portal.component.scss',
 })
 export class PortalComponent implements OnInit, OnDestroy {
   patient_id: string | null = null;
   patient: Patient | null = null;
+  isMenuCollapsed = true;
 
   constructor(
     private patientService: PatientService,
