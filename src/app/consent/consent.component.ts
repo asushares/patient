@@ -80,20 +80,20 @@ export class ConsentComponent implements OnInit, OnDestroy {
   ];
 
   get previewListString() {
-    return (
-      '<ul><li>' +
-      (this.previewList ?? [])
-        .map(([id, permit]) => {
-          // const content = this.category.contentArr.find(
-          //   content => content.split(' ')[0] === id,
-          // );
-          return permit
-            ? `<span class="text-success">${id}</span>`
-            : `<span class="text-danger text-decoration-line-through">${id}</span>`;
-        })
-        .join('</li><li>') +
-      '</li></ul>'
-    );
+    return this.previewList.length > 0
+      ? '<ul><li>' +
+          this.previewList
+            .map(([id, permit]) => {
+              // const content = this.category.contentArr.find(
+              //   content => content.split(' ')[0] === id,
+              // );
+              return permit
+                ? `<span class="text-success">${id}</span>`
+                : `<span class="text-danger text-decoration-line-through">${id}</span>`;
+            })
+            .join('</li><li>') +
+          '</li></ul>'
+      : '';
   }
 
   constructor(
