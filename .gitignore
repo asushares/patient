@@ -43,3 +43,4 @@ Thumbs.db
 
 # environment file
 .env.local
+/src/assets/configuration.js
