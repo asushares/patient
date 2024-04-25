@@ -1,3 +1,5 @@
+/// <reference types="@angular/localize" />
+
 // Author: Preston Lee
 
 import { bootstrapApplication } from '@angular/platform-browser';
