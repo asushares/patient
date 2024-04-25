@@ -3,9 +3,9 @@
   "version": "0.2.1",
   "scripts": {
     "ng": "ng",
-    "start": "envsub --env-file .env.local --syntax dollar src/assets/configuration.template.js src/assets/configuration.js && ng serve",
+    "start": "envsub --env-file .env.local --syntax dollar --system  src/assets/configuration.template.js src/assets/configuration.js && ng serve",
     "build": "ng build",
-    "watch": "envsub --env-file .env.local --syntax dollar src/assets/configuration.template.js src/assets/configuration.js && ng build --watch --configuration development",
+    "watch": "envsub --env-file .env.local --syntax dollar --system src/assets/configuration.template.js src/assets/configuration.js && ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write \"src/**/*.{ts,html,scss}\"",
     "lint": "ng lint --fix"
