@@ -10,10 +10,9 @@ describe('ConsentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConsentComponent]
-    })
-    .compileComponents();
-    
+      imports: [ConsentComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ConsentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

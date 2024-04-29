@@ -12,20 +12,20 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './launch.component.html',
-  styleUrl: './launch.component.scss'
+  styleUrl: './launch.component.scss',
 })
 export class LaunchComponent {
-
-
   public patientSearchText = '';
   patientList: Bundle<Patient> | null = null;
   // patientSelected: Patient | null = null;
   patientSearching: boolean = false;
 
-  constructor(private patientService: PatientService, private router: Router) {
-  }
+  constructor(
+    private patientService: PatientService,
+    private router: Router,
+  ) {}
 
-  patientSearch(text: string) {
+  patientSearch(_text: string) {
     this.patientList = null;
     this.patientSearching = true;
     this.patientService.search(this.patientSearchText).subscribe(b => {
@@ -33,10 +33,8 @@ export class LaunchComponent {
       this.patientSearching = false;
     });
   }
- 
+
   launchPatientPortal(p: Patient) {
     this.router.navigate(['portal', p.id, 'consent-list']);
   }
-
-
 }

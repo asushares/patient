@@ -9,17 +9,28 @@ import { PatientService } from './patient.service';
 import { BackendService } from './backend.service';
 import { ConsentService } from './consent.service';
 import { OrganizationService } from './organization.service';
+import { CDSService } from './cds.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, FormsModule, HttpClientModule],
-  providers: [PatientService, ConsentService, OrganizationService, BackendService],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterModule,
+    FormsModule,
+    HttpClientModule,
+  ],
+  providers: [
+    CDSService,
+    PatientService,
+    ConsentService,
+    OrganizationService,
+    BackendService,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
-
   title = 'Patient Portal';
-
 }
