@@ -8,7 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
-import { ConsentCategoryFormCheckComponent } from '../consent-category-form-check/consent-category-form-check.component';
+import { ConsentCategoryFormCheckComponent } from './consent-category-form-check/consent-category-form-check.component';
+import { ConsentPeriodComponent } from './consent-period/consent-period.component';
 import { CDSService } from '../cds.service';
 // used to test
 import requestBody from './example-request-permit.json';
@@ -16,7 +17,12 @@ import requestBody from './example-request-permit.json';
 @Component({
   selector: 'app-consent',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConsentCategoryFormCheckComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ConsentCategoryFormCheckComponent,
+    ConsentPeriodComponent,
+  ],
   templateUrl: './consent.component.html',
   styleUrl: './consent.component.scss',
 })
@@ -155,6 +161,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
    * Adds a period to the consent.
    */
   addPeriod() {
+    console.log('Adding period.', this, this.consent);
     if (this.consent) {
       const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
       tomorrow.toDateString();
@@ -175,6 +182,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
    * Removes the period from the consent.
    */
   removePeriod() {
+    console.log('Removing period.');
     if (this.consent) {
       delete this.consent.period;
     }
