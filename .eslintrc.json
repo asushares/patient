@@ -62,7 +62,8 @@
           {
             "parser": "angular"
           }
-        ]
+        ],
+        "@angular-eslint/template/elements-content": "off"
       }
     }
   ]

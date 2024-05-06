@@ -1,0 +1,92 @@
+@if (provision) {
+  @if (period) {
+    <div class="row mt-4">
+      <div class="col-sm-12 mb-2">
+        <button class="btn btn-sm btn-primary" (click)="removePeriod()">
+          <span class="bi-save"></span>&nbsp; Remove Date Restrictions
+        </button>
+      </div>
+      <div class="row row-cols-sm-auto">
+        <div class="col-12">
+          <div class="dp-hidden position-absolute">
+            <div class="input-group">
+              <input
+                name="datepicker"
+                class="form-control"
+                ngbDatepicker
+                #datepicker="ngbDatepicker"
+                [autoClose]="'outside'"
+                (dateSelect)="onDateSelection($event)"
+                [displayMonths]="2"
+                [dayTemplate]="t"
+                outsideDays="hidden"
+                [startDate]="fromDate!"
+                tabindex="-1" />
+              <ng-template #t let-date let-focused="focused">
+                <span
+                  class="custom-day"
+                  [class.focused]="focused"
+                  [class.range]="isRange(date)"
+                  [class.faded]="isHovered(date) || isInside(date)"
+                  (mouseenter)="hoveredDate = date"
+                  (mouseleave)="hoveredDate = null">
+                  {{ date.day }}
+                </span>
+              </ng-template>
+            </div>
+          </div>
+          <div class="flex flex-column">
+            <div class="input-group">
+              <input
+                class="input form-control form-control-sm date datepicker-input"
+                type="text"
+                placeholder="yyyy-mm-dd"
+                name="consent_provision_period_start"
+                #dpFromDate
+                [value]="formatter.format(fromDate)"
+                (input)="updateFromDate()" />
+              <button
+                class="btn btn-outline-secondary bi bi-calendar3"
+                (click)="datepicker.toggle()"
+                type="button"></button>
+            </div>
+            <!-- <label for="consent_provision_period_start">Start</label> -->
+            <small class="form-text"
+              >Begins at this date in yyyy-mm-dd format.</small
+            >
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="flex flex-column">
+            <div class="input-group">
+              <input
+                class="form-control form-control-sm date datepicker-input"
+                type="text"
+                placeholder="yyyy-mm-dd"
+                name="consent_provision_period_end"
+                #dpToDate
+                [value]="formatter.format(toDate)"
+                (input)="updateToDate()" />
+              <button
+                class="btn btn-outline-secondary bi bi-calendar3"
+                (click)="datepicker.toggle()"
+                type="button"></button>
+            </div>
+            <!-- <label for="consent_provision_period_end d-block">End</label> -->
+            <small class="form-text"
+              >Ends at this date in yyyy-mm-dd format.</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="mt-4">
+      <!-- <h2>Effective From</h2> -->
+      <button class="btn btn-sm btn-primary" (click)="addPeriod()">
+        <span class="bi-calendar"></span> &nbsp;Add Effective Dates</button
+      ><br />
+      <span class="form-text">None are currently set.</span>
+    </div>
+  }
+}
