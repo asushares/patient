@@ -10,9 +10,33 @@ import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
 import { ConsentCategoryFormCheckComponent } from './consent-category-form-check/consent-category-form-check.component';
 import { ConsentPeriodComponent } from './consent-period/consent-period.component';
-import { CDSService } from '../cds.service';
+import { CDSService, MedicalInformationType } from '../cds.service';
 // used to test
-import requestBody from './example-request-permit.json';
+import rawRequestBody from './example-request-permit.json';
+import { PatientService } from '../patient.service';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { JSONPath } from 'jsonpath-plus';
+
+type PreviewList = Record<
+  MedicalInformationType,
+  { code: string; display: string }[]
+>;
+
+type CDSHookResponse = {
+  extension: {
+    content: {
+      entry: {
+        resource: {
+          meta: {
+            security: {
+              code: MedicalInformationType;
+            }[];
+          };
+        };
+      }[];
+    };
+  };
+};
 
 @Component({
   selector: 'app-consent',
@@ -30,6 +54,9 @@ import requestBody from './example-request-permit.json';
  * Represents the Consent Component.
  */
 export class ConsentComponent implements OnInit, OnDestroy {
+  patientId: string | null = null;
+  patientEverything: Bundle | null = null;
+
   consent_id: string | null = null;
   consent: Consent | null = null;
 
@@ -37,70 +64,53 @@ export class ConsentComponent implements OnInit, OnDestroy {
 
   organizationSearchText = '';
   organizationList: Bundle<Organization> | null = null;
-  organizationSelected: Organization[] = [];
+  organizationSelected: BehaviorSubject<Organization[]> = new BehaviorSubject<
+    Organization[]
+  >([]);
   organizationSearching: boolean = false;
 
   authorizationName = '';
 
   // Categories for consent
-  previewList: [string, boolean][] = [];
-  categories = [
-    { id: 'categoryDemographics', label: 'Demographics', contentArr: [] },
-    { id: 'categoryDiagnoses', label: 'Diagnoses', contentArr: [] },
-    { id: 'categoryDisabilities', label: 'Disabilities', contentArr: [] },
-    { id: 'categoryGenetics', label: 'Genetics', contentArr: [] },
-    {
-      id: 'categoryInfectiousDiseases',
-      label: 'Infectious Diseases',
-      contentArr: [],
-    },
-    { id: 'categoryMedications', label: 'Medications', contentArr: [] },
-    { id: 'categoryMentalHealth', label: 'Mental Health', contentArr: [] },
-    {
-      id: 'categorySexualAndReproductiveHealth',
-      label: 'Sexual and Reproductive Health',
-      contentArr: [],
-    },
-    {
-      id: 'categorySocialDeterminantsOfHealth',
-      label: 'Social Determinants of Health',
-      contentArr: [],
-    },
-    {
-      id: 'categorySubstanceUse',
-      label: 'Substance Use',
-      contentArr: [
-        'Methamphetamine intoxication',
-        'Family history-Alcohol abuse',
-        'Family history-Drug abuse',
-        'Methadone [Presence] in Urine by Screen method',
-        'Morphine, lo other',
-        'Oplates screen, urine(positive)',
-        'Alcohol screening (negative)',
-        'History of domestic altercation',
-        'Hydrocodone bitartrate 5 mg and paracetamol 325 mg oral tablet',
-        'Estazolam 1 mg oral tablet',
-      ],
-    },
-    { id: 'categoryViolence', label: 'Violence', contentArr: [] },
-  ];
+  previewList: PreviewList = {
+    SUD: [],
+    MENCAT: [],
+    DEMO: [],
+    DIA: [],
+    DIS: [],
+    GDIS: [],
+    DISEASE: [],
+    DRGIS: [],
+    SEX: [],
+    SOCIAL: [],
+    VIO: [],
+  };
 
-  get previewListString() {
-    return this.previewList.length > 0
-      ? '<ul><li>' +
-          this.previewList
-            .map(([id, permit]) => {
-              // const content = this.category.contentArr.find(
-              //   content => content.split(' ')[0] === id,
-              // );
-              return permit
-                ? `<span class="text-success">${id}</span>`
-                : `<span class="text-danger text-decoration-line-through">${id}</span>`;
-            })
-            .join('</li><li>') +
-          '</li></ul>'
-      : '';
-  }
+  categories: { id: MedicalInformationType; label: string }[] = [
+    { id: 'DEMO', label: 'Demographics' },
+    { id: 'DIA', label: 'Diagnoses' },
+    { id: 'DIS', label: 'Disabilities' },
+    { id: 'GDIS', label: 'Genetics' },
+    {
+      id: 'DISEASE',
+      label: 'Infectious Diseases',
+    },
+    { id: 'DRGIS', label: 'Medications' },
+    { id: 'MENCAT', label: 'Mental Health' },
+    {
+      id: 'SEX',
+      label: 'Sexual and Reproductive Health',
+    },
+    {
+      id: 'SOCIAL',
+      label: 'Social Determinants of Health',
+    },
+    {
+      id: 'SUD',
+      label: 'Substance Use',
+    },
+    { id: 'VIO', label: 'Violence' },
+  ];
 
   constructor(
     private cdsService: CDSService,
@@ -108,6 +118,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
     private organizationService: OrganizationService,
     private route: ActivatedRoute,
     private router: Router,
+    private patientService: PatientService,
   ) {}
 
   /**
@@ -121,40 +132,85 @@ export class ConsentComponent implements OnInit, OnDestroy {
    * Lifecycle hook that is called after the component is initialized.
    */
   ngOnInit(): void {
+    this.patientId = this.route.parent!.snapshot.paramMap.get('patient_id');
     this.consent_id = this.route.snapshot.paramMap.get('consent_id');
+
     if (this.consent_id) {
       this.consentService.load(this.consent_id);
-      this.consentService.current.subscribe({
-        next: d => {
-          this.consent = d;
-          if (d) {
-            console.log('Loaded consent.');
-          } else {
-            console.log(
-              'Consent data null. Either an intentional cache clearance or not loaded yet. No worries.',
-            );
-          }
-          this.consent?.controller?.forEach(c => {
-            // console.log("REF: " + c.reference);
-            console.log(c.reference?.match(/Organization\/.+/));
-
-            if (c.reference?.match(/Organization\/.+/) != null) {
-              const id = c.reference.substring('Organization/'.length);
-              // console.log("CID: " + id);
-              this.organizationService.get(id).subscribe({
-                next: o => {
-                  this.organizationSelected.push(o);
-                },
-              });
-            }
-          });
-        },
-        error: e => {
-          console.error('Failed to load consent!');
-          console.error(e);
-        },
-      });
     }
+
+    this.consentService.current.subscribe({
+      next: d => {
+        this.consent = d;
+        if (d) {
+          console.log('Loaded consent.');
+        } else {
+          console.log(
+            'Consent data null. Either an intentional cache clearance or not loaded yet. No worries.',
+          );
+        }
+        this.consent?.controller?.forEach(c => {
+          // console.log("REF: " + c.reference);
+          console.log(c.reference?.match(/Organization\/.+/));
+
+          if (c.reference?.match(/Organization\/.+/) != null) {
+            const id = c.reference.substring('Organization/'.length);
+            // console.log("CID: " + id);
+            this.organizationService.get(id).subscribe({
+              next: o => {
+                this.organizationSelected.next([
+                  ...this.organizationSelected.getValue(),
+                  o,
+                ]);
+              },
+            });
+          }
+        });
+      },
+      error: e => {
+        console.error('Failed to load consent!');
+        console.error(e);
+      },
+    });
+
+    this.patientService.currentPatientEverything$.subscribe({
+      next: d => {
+        this.patientEverything = d;
+        if (d) {
+          console.log('Loaded patient everything.', d);
+        } else {
+          console.log(
+            'Patient everything data null. Either an intentional cache clearance or not loaded yet. No worries.',
+          );
+        }
+      },
+      error: e => {
+        console.error('Failed to load patient everything!');
+        console.error(e);
+      },
+    });
+
+    combineLatest([
+      this.patientService.currentPatientEverything$,
+      this.organizationSelected,
+    ]).subscribe(([patientEverything, organizationSelected]) => {
+      if (patientEverything) {
+        if (
+          patientEverything?.entry?.length &&
+          patientEverything.entry.length >= 1
+        ) {
+          const actors = organizationSelected.map(({ id }) => ({
+            value: `Organization/${id}`,
+          }));
+          const patientId = [{ value: `Patient/${this.patientId}` }];
+          const [_patient, ...rest] = patientEverything.entry;
+          // temporarily include entry items of the example
+          const entry = [...rawRequestBody.context.content.entry, ...rest];
+          const requestBody = { ...rawRequestBody, actors, patientId, entry };
+          this.updatePreviewList(requestBody);
+        }
+      }
+    });
   }
 
   /**
@@ -208,7 +264,10 @@ export class ConsentComponent implements OnInit, OnDestroy {
    */
   selectOrganization(o: Organization) {
     if (this.consent) {
-      this.organizationSelected.push(o);
+      this.organizationSelected.next([
+        ...this.organizationSelected.getValue(),
+        o,
+      ]);
       this.consent.controller?.push({
         type: 'Organization',
         reference: 'Organization/' + o.id,
@@ -231,9 +290,11 @@ export class ConsentComponent implements OnInit, OnDestroy {
             this.consent.controller.splice(i, 1);
           }
         }
-        for (let i = 0; i < this.organizationSelected.length; i++) {
-          if (org.id == this.organizationSelected[i].id) {
-            this.organizationSelected.splice(i, 1);
+        for (let i = 0; i < this.organizationSelected.getValue().length; i++) {
+          if (org.id == this.organizationSelected.getValue()[i].id) {
+            this.organizationSelected.next(
+              this.organizationSelected.getValue().splice(i, 1),
+            );
           }
         }
       }
@@ -247,7 +308,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
    */
   organizationForReference(ref: string): Organization | null {
     let org = null;
-    this.organizationSelected.forEach(o => {
+    this.organizationSelected.getValue().forEach(o => {
       // console.log("REF: " + ref);
       if ('Organization/' + o.id == ref) {
         org = o;
@@ -263,7 +324,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
    */
   isSelectedOrganization(o: Organization): boolean {
     let selected = false;
-    this.organizationSelected.forEach(n => {
+    this.organizationSelected.getValue().forEach(n => {
       if (n.id == o.id) {
         selected = true;
       }
@@ -271,18 +332,43 @@ export class ConsentComponent implements OnInit, OnDestroy {
     return selected;
   }
 
-  updatePreviewList([category, _checked]: [string, boolean]): void {
+  updatePreviewList(requestBody: object): void {
     this.cdsService.postHook({
-      body: requestBody, // temporarily use an example json to do the test
+      body: requestBody,
       'cds-redaction-enabled': 'false',
     });
 
     this.cdsService.current.subscribe({
-      next: _d => {
-        this.previewList = [
-          [`${category} Test Permit Label ${Date().toLocaleUpperCase()}`, true],
-          [`${category} Test Deny Label ${Date().toLocaleUpperCase()}`, false],
-        ];
+      next: (_d: unknown) => {
+        const d = _d as CDSHookResponse;
+
+        this.previewList = d?.extension.content.entry.reduce(
+          (acc, { resource }) => {
+            if (resource.meta.security.length === 0) return acc;
+            const { code } = resource.meta.security[0];
+            const codings = JSONPath({
+              path: '$..coding',
+              json: resource,
+            }).flat();
+            return {
+              ...acc,
+              [code]: [...acc[code], ...codings],
+            };
+          },
+          {
+            SUD: [],
+            MENCAT: [],
+            DEMO: [],
+            DIA: [],
+            DIS: [],
+            GDIS: [],
+            DISEASE: [],
+            DRGIS: [],
+            SEX: [],
+            SOCIAL: [],
+            VIO: [],
+          } as PreviewList,
+        );
       },
       error: e => {
         console.error('Error posting hook.');

@@ -14,9 +14,10 @@ export class PatientService extends BaseService {
   public current: BehaviorSubject<Patient | null> =
     new BehaviorSubject<Patient | null>(null);
 
-  // constructor(protected backendService: BackendService) {
-  //   super();
-  // }
+  private currentPatientEverything: BehaviorSubject<Bundle | null> =
+    new BehaviorSubject<Bundle | null>(null);
+
+  currentPatientEverything$ = this.currentPatientEverything.asObservable();
 
   url(): string {
     return this.backendService.url + PatientService.PATIENT_PATH;
@@ -39,6 +40,12 @@ export class PatientService extends BaseService {
     });
   }
 
+  getEverything(id: string) {
+    return this.http.get<Bundle>(this.urlFor(id) + '/$everything', {
+      headers: this.backendService.headers(),
+    });
+  }
+
   load(id: string) {
     this.http
       .get<Patient>(this.urlFor(id), { headers: this.backendService.headers() })
@@ -48,6 +55,22 @@ export class PatientService extends BaseService {
         },
         error: e => {
           console.error('Error loading patient.');
+          console.error(e);
+        },
+      });
+  }
+
+  loadEverything(id: string) {
+    this.http
+      .get<Bundle>(this.urlFor(id) + '/$everything', {
+        headers: this.backendService.headers(),
+      })
+      .subscribe({
+        next: d => {
+          this.currentPatientEverything.next(d);
+        },
+        error: e => {
+          console.error('Error loading patient everything.');
           console.error(e);
         },
       });

@@ -1,39 +1,68 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
-  ViewChild,
-  ElementRef,
+  type OnInit,
+  type OnChanges,
+  type SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-consent-category-form-check',
   standalone: true,
-  imports: [CommonModule, NgbPopoverModule],
+  imports: [CommonModule, NgbPopoverModule, ReactiveFormsModule],
   templateUrl: './consent-category-form-check.component.html',
   styleUrl: './consent-category-form-check.component.scss',
 })
-export class ConsentCategoryFormCheckComponent {
+export class ConsentCategoryFormCheckComponent implements OnInit, OnChanges {
   @Input() category!: {
     id: string;
     label: string;
-    contentArr: string[];
   };
   @Input() isFirst!: boolean;
-  @Input() previewListString!: string;
-  @Output() refreshPreviewList = new EventEmitter<[string, boolean]>();
-  @ViewChild('form_check_input')
-  form_check_input!: ElementRef<HTMLInputElement>;
+  @Input() infoItems!: { code: string; display: string }[];
 
-  popoverTitle =
-    'The following information will not be shared with the organizations you specify:';
+  formCheckInput = new FormControl(true);
+  popoverTitle: string =
+    'The following information will be shared with the organizations you specify:';
+  previewContent: string = 'No relevant Information.';
 
-  previewShown() {
-    const categoryId = this.category.id;
-    const checked = this.form_check_input.nativeElement.checked;
-    this.refreshPreviewList.emit([categoryId, checked]);
+  ngOnInit(): void {
+    this.formCheckInput.valueChanges.subscribe(checked => {
+      this.popoverTitle = `The following information will ${checked ? 'be' : 'not be'} shared with the organizations you specify:`;
+      this.previewContent = this.regeneratePreviewContent(
+        this.infoItems,
+        checked ?? true,
+      );
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['infoItems']) {
+      const checked = this.formCheckInput.value ?? true;
+      this.previewContent = this.regeneratePreviewContent(
+        this.infoItems,
+        checked,
+      );
+    }
+  }
+
+  regeneratePreviewContent(
+    items: { code: string; display: string }[],
+    checked: boolean,
+  ): string {
+    return items.length > 0
+      ? '<ul><li>' +
+          items
+            .map(info => {
+              return checked
+                ? `<span class="text-black">${info.display}</span>`
+                : `<span class="text-danger text-decoration-line-through">${info.display}</span>`;
+            })
+            .join('</li><li>') +
+          '</li></ul>'
+      : 'No relevant Information.';
   }
 }

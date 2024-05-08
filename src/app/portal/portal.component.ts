@@ -5,7 +5,7 @@ import {
   NgbDropdownModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { PatientService } from '../patient.service';
-import { Patient } from 'fhir/r5';
+import { Bundle, HumanName, Patient } from 'fhir/r5';
 
 @Component({
   selector: 'app-portal',
@@ -19,6 +19,8 @@ export class PortalComponent implements OnInit, OnDestroy {
   patient: Patient | null = null;
   isMenuCollapsed = true;
 
+  patientEverything: Bundle | null = null;
+
   constructor(
     private patientService: PatientService,
     private route: ActivatedRoute,
@@ -31,21 +33,22 @@ export class PortalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.patient_id = this.route.snapshot.paramMap.get('patient_id');
+
     if (this.patient_id) {
-      this.patientService.load(this.patient_id);
-      this.patientService.current.subscribe({
+      this.patientService.loadEverything(this.patient_id);
+      this.patientService.currentPatientEverything$.subscribe({
         next: d => {
-          this.patient = d;
+          this.patientEverything = d;
           if (d) {
-            console.log('Loaded patient.');
+            console.log('Loaded patient everything.');
           } else {
             console.log(
-              'Patient data null. Either an intentional cache clearance or not loaded yet. No worries.',
+              'Patient everything data null. Either an intentional cache clearance or not loaded yet. No worries.',
             );
           }
         },
         error: e => {
-          console.error('Failed to load patient!');
+          console.error('Failed to load patient everything!');
           console.error(e);
         },
       });
@@ -62,13 +65,18 @@ export class PortalComponent implements OnInit, OnDestroy {
 
   patientName(): string {
     let name = '(No Name)';
-    if (this.patient?.name && this.patient.name.length > 0) {
+    if (
+      (this.patientEverything?.entry?.[0]?.resource as Patient)?.name &&
+      (this.patientEverything?.entry?.[0].resource as Patient)?.name?.length
+    ) {
+      const rawName = (this.patientEverything?.entry?.[0].resource as Patient)
+        .name as HumanName[];
       const tmp = [];
-      if (this.patient.name[0].given) {
-        tmp.push(...this.patient.name[0].given);
+      if (rawName[0].given) {
+        tmp.push(...rawName[0].given);
       }
-      if (this.patient.name[0].family) {
-        tmp.push(this.patient.name[0].family);
+      if (rawName[0].family) {
+        tmp.push(rawName[0].family);
       }
       name = tmp.join(' ');
     }

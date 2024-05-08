@@ -18,6 +18,19 @@ type EndpointType = {
   headers: string[];
 };
 
+export type MedicalInformationType =
+  | 'SUD'
+  | 'MENCAT'
+  | 'DEMO'
+  | 'DIA'
+  | 'DIS'
+  | 'GDIS'
+  | 'DISEASE'
+  | 'DRGIS'
+  | 'SEX'
+  | 'SOCIAL'
+  | 'VIO';
+
 const cdsEndpoints = new Map<RequestType, EndpointType>([
   [
     'get-root',
