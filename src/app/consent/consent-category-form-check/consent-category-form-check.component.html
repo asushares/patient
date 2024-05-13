@@ -1,5 +1,5 @@
 <ng-template #popContent>
-  <div [innerHTML]="previewListString"></div>
+  <div [innerHTML]="previewContent"></div>
 </ng-template>
 
 <div
@@ -10,7 +10,7 @@
     type="checkbox"
     role="switch"
     checked
-    #form_check_input
+    [formControl]="formCheckInput"
     [id]="category.id" />
   <label class="form-check-label" [for]="category.id">{{
     category.label
@@ -21,6 +21,5 @@
     placement="end"
     container="body"
     [ngbPopover]="popContent"
-    [popoverTitle]="popoverTitle"
-    (shown)="previewShown()"></i>
+    [popoverTitle]="popoverTitle"></i>
 </div>

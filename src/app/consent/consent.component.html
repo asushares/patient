@@ -43,9 +43,8 @@
           <app-consent-category-form-check
             [category]="category"
             [isFirst]="$first"
-            [previewListString]="previewListString"
-            (refreshPreviewList)="
-              updatePreviewList($event)
+            [infoItems]="
+              previewList[category.id] ? previewList[category.id] : []
             "></app-consent-category-form-check>
         }
       }
