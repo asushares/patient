@@ -40,12 +40,6 @@ export class PatientService extends BaseService {
     });
   }
 
-  getEverything(id: string) {
-    return this.http.get<Bundle>(this.urlFor(id) + '/$everything', {
-      headers: this.backendService.headers(),
-    });
-  }
-
   load(id: string) {
     this.http
       .get<Patient>(this.urlFor(id), { headers: this.backendService.headers() })
@@ -60,14 +54,25 @@ export class PatientService extends BaseService {
       });
   }
 
-  loadEverything(id: string) {
+  loadEverything(id: string, searchParameters: string = '_count=1000') {
     this.http
-      .get<Bundle>(this.urlFor(id) + '/$everything', {
+      .get<Bundle>(this.urlFor(id) + '/$everything?' + searchParameters, {
         headers: this.backendService.headers(),
       })
       .subscribe({
         next: d => {
-          this.currentPatientEverything.next(d);
+          const nextLink = (d.link as { relation: string; url: string }[]).find(
+            ({ relation }) => relation === 'next',
+          );
+          const currentValue = this.currentPatientEverything.getValue();
+          const { id: _id, link: _link, ...rest } = d;
+          this.currentPatientEverything.next({
+            ...rest,
+            entry: [...(currentValue?.entry || []), ...d.entry!],
+          });
+          if (nextLink) {
+            this.loadEverything(id, nextLink.url.split('?')[1]);
+          }
         },
         error: e => {
           console.error('Error loading patient everything.');
