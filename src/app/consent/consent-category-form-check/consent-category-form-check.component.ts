@@ -58,8 +58,8 @@ export class ConsentCategoryFormCheckComponent implements OnInit, OnChanges {
           items
             .map(info => {
               return checked
-                ? `<span class="text-black">${info.display}</span>`
-                : `<span class="text-danger text-decoration-line-through">${info.display}</span>`;
+                ? `<span>${info.display}</span>`
+                : `<span>${info.display}</span>`;
             })
             .join('</li><li>') +
           '</li></ul>'

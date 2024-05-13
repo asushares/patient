@@ -26,9 +26,9 @@ export class ConsentListComponent implements OnInit {
     private router: Router,
   ) {}
   ngOnInit(): void {
-    this.patientService.current.subscribe({
+    this.patientService.currentPatientEverything$.subscribe({
       next: d => {
-        this.patient = d;
+        this.patient = d?.entry?.[0] ? (d.entry[0].resource as Patient) : null;
         this.reload();
         // if (d) {
         //   // console.log('Loaded patient.');
