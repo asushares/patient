@@ -1,1 +1,88 @@
-<p>summary works!</p>
+<div class="container-fluid shadow" style="margin-top: 40px">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeCategory" class="nav-tabs">
+    @for (category of categories; track category.id) {
+      <li [ngbNavItem]="category.id">
+        <button ngbNavLink>{{ category.label }}</button>
+        <ng-template ngbNavContent>
+          <div ngbAccordion [closeOthers]="true">
+            @for (item of _tempPreviewList[category.id]; track item.display) {
+              <div ngbAccordionItem [collapsed]="false">
+                <h2 ngbAccordionHeader>
+                  <button ngbAccordionButton>{{ item.display }}</button>
+                </h2>
+                <div ngbAccordionCollapse>
+                  <div ngbAccordionBody>
+                    <ng-template>
+                      <h3>Consents</h3>
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Actor</th>
+                            <th>Action</th>
+                            <th>Purpose</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (
+                            consent of item.consents;
+                            track consent.id;
+                            let i = $index
+                          ) {
+                            <tr>
+                              <td>
+                                {{ consent?.meta?.lastUpdated }}
+                              </td>
+                              <td>
+                                {{
+                                  consent?.provision?.[0]?.actor?.[0]?.role
+                                    ?.coding?.[0]?.code
+                                }}
+                              </td>
+                              <td>
+                                {{
+                                  consent?.provision?.[0]?.action?.[0]
+                                    ?.coding?.[0]?.code
+                                }}
+                              </td>
+                              <td>
+                                {{
+                                  consent?.provision?.[0]?.purpose?.[0]?.display
+                                }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                      <h3>Rules</h3>
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>System</th>
+                            <th>Code</th>
+                            <th>Confidence</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ item.rule?.system }}</td>
+                            <td>{{ item.rule?.code }}</td>
+                            <td>{{ item.rule?.confidence }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            }
+            @if (_tempPreviewList[category.id].length === 0) {
+              <div>No data available.</div>
+            }
+          </div>
+        </ng-template>
+      </li>
+    }
+  </ul>
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>

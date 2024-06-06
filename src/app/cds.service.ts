@@ -3,6 +3,8 @@ import { BaseService } from './base.service';
 import { HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { NoConsentCard } from '@asushares/core';
+import { JSONPath } from 'jsonpath-plus';
+import { FhirResource } from 'fhir/r5';
 
 type RequestType =
   | 'get-root'
@@ -30,6 +32,56 @@ export type MedicalInformationType =
   | 'SEX'
   | 'SOCIAL'
   | 'VIO';
+
+export type PreviewList = Record<
+  MedicalInformationType,
+  {
+    code: string;
+    display: string;
+    system: string;
+    resource: unknown;
+    rule?: { code: string; system: string; confidence: number };
+    consents?: {
+      id: string;
+      status: string;
+      meta: {
+        lastUpdated: string;
+      };
+      category: unknown[];
+      controller: unknown[];
+      decision: 'deny' | 'permit';
+      provision: {
+        actor: {
+          role: { coding: { code: string; system: string }[] };
+          reference: { reference: string };
+        }[];
+        action: { coding: { code: string; system: string }[] }[];
+        purpose: {
+          code: string;
+          system: string;
+          display: string;
+        }[];
+        securityLabel: unknown[];
+      }[];
+    }[];
+  }[]
+>;
+
+export type CDSHookResponse = {
+  extension: {
+    content: {
+      entry: {
+        resource: {
+          meta: {
+            security: {
+              code: MedicalInformationType;
+            }[];
+          };
+        };
+      }[];
+    };
+  };
+};
 
 const cdsEndpoints = new Map<RequestType, EndpointType>([
   [
@@ -93,6 +145,8 @@ const cdsEndpoints = new Map<RequestType, EndpointType>([
 export class CDSService extends BaseService {
   public current = new BehaviorSubject<NoConsentCard | null>(null);
 
+  public currentPreviewList = new BehaviorSubject<PreviewList | null>(null);
+
   public requestCreator<T extends string, S extends object>(
     requestType: RequestType,
   ) {
@@ -146,7 +200,81 @@ export class CDSService extends BaseService {
       NoConsentCard
     >('post-hook')(parameters).subscribe({
       next: d => {
+        console.log('Hook response:', d);
         this.current.next(d);
+        this.currentPreviewList.next(
+          d?.extension?.content?.entry?.reduce(
+            (acc, { resource }) => {
+              if (!resource) {
+                resource = {} as FhirResource;
+              }
+              if (!resource.meta) {
+                resource.meta = {
+                  security: [],
+                };
+              }
+              if (!resource.meta.security) {
+                resource.meta.security = [];
+              }
+              if (resource.meta.security.length === 0) {
+                return acc;
+              }
+              const { code } = resource.meta.security[0] as {
+                code: MedicalInformationType;
+              };
+              const codings = JSONPath({
+                path: '$..coding',
+                json: resource,
+              }).flat();
+              return {
+                ...acc,
+                [code]: [...acc[code], ...codings],
+              };
+            },
+            {
+              SUD: [
+                // {
+                //   display: 'afternill',
+                //   code: '480',
+                //   system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+                //   resource: {
+                //     resourceType: 'Medication',
+                //     id: 'med0310',
+                //     contained: [
+                //       {
+                //         resourceType: 'Substance',
+                //         id: 'sub03',
+                //         instance: false,
+                //         code: {
+                //           concept: {
+                //             coding: [
+                //               {
+                //                 system:
+                //                   'http://www.nlm.nih.gov/research/umls/rxnorm',
+                //                 code: '480',
+                //                 display: 'alfentanil',
+                //               },
+                //             ],
+                //           },
+                //         },
+                //       },
+                //     ],
+                //   },
+                // },
+              ],
+              MENCAT: [],
+              DEMO: [],
+              DIA: [],
+              DIS: [],
+              GDIS: [],
+              DISEASE: [],
+              DRGIS: [],
+              SEX: [],
+              SOCIAL: [],
+              VIO: [],
+            } as PreviewList,
+          ) ?? null,
+        );
       },
       error: e => {
         console.error('Error posting hook.');
@@ -161,4 +289,93 @@ export class CDSService extends BaseService {
   public getSensitivityRules = this.requestCreator('get-sensitivity_rules');
 
   public postSensitivityRules = this.requestCreator('post-sensitivity_rules');
+
+  public clear() {
+    this.current.next(null);
+  }
+
+  updatePreviewList(requestBody: object, _previewList: PreviewList): void {
+    this.postHook({
+      body: requestBody,
+      'cds-redaction-enabled': 'false',
+    });
+
+    this.current.subscribe({
+      next: (_d: unknown) => {
+        const d = _d as CDSHookResponse;
+        console.log('Preview list response:', d?.extension.content.entry);
+        _previewList = d?.extension.content.entry.reduce(
+          (acc, { resource }) => {
+            if (!resource.meta) {
+              resource.meta = {
+                security: [],
+              };
+            }
+            if (!resource.meta.security) {
+              resource.meta.security = [];
+            }
+            if (resource.meta.security.length === 0) {
+              return acc;
+            }
+            const { code } = resource.meta.security[0];
+            const codings = JSONPath({
+              path: '$..coding',
+              json: resource,
+            }).flat();
+            return {
+              ...acc,
+              [code]: [...acc[code], { ...codings, resource }],
+            };
+          },
+          {
+            SUD: [
+              {
+                display: 'afternill',
+                code: '480',
+                system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+                resource: {
+                  resourceType: 'Medication',
+                  id: 'med0310',
+                  contained: [
+                    {
+                      resourceType: 'Substance',
+                      id: 'sub03',
+                      instance: false,
+                      code: {
+                        concept: {
+                          coding: [
+                            {
+                              system:
+                                'http://www.nlm.nih.gov/research/umls/rxnorm',
+                              code: '480',
+                              display: 'alfentanil',
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            MENCAT: [],
+            DEMO: [],
+            DIA: [],
+            DIS: [],
+            GDIS: [],
+            DISEASE: [],
+            DRGIS: [],
+            SEX: [],
+            SOCIAL: [],
+            VIO: [],
+          } as PreviewList,
+        );
+        console.log('_previewList: ', _previewList);
+      },
+      error: (e: Error) => {
+        console.error('Error posting hook.');
+        console.error(e);
+      },
+    });
+  }
 }

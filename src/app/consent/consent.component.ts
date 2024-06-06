@@ -10,34 +10,15 @@ import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
 import { ConsentCategoryFormCheckComponent } from './consent-category-form-check/consent-category-form-check.component';
 import { ConsentPeriodComponent } from './consent-period/consent-period.component';
-import { CDSService, MedicalInformationType } from '../cds.service';
+import {
+  CDSService,
+  type MedicalInformationType,
+  type PreviewList,
+} from '../cds.service';
 // used to test
-import rawRequestBody from './example-request-permit.json';
+import rawRequestBody from '../example-request-permit.json';
 import { PatientService } from '../patient.service';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { JSONPath } from 'jsonpath-plus';
-
-type PreviewList = Record<
-  MedicalInformationType,
-  { code: string; display: string }[]
->;
-
-type CDSHookResponse = {
-  extension: {
-    content: {
-      entry: {
-        resource: {
-          meta: {
-            security: {
-              code: MedicalInformationType;
-            }[];
-          };
-        };
-      }[];
-    };
-  };
-};
-
 @Component({
   selector: 'app-consent',
   standalone: true,
@@ -190,6 +171,35 @@ export class ConsentComponent implements OnInit, OnDestroy {
       },
     });
 
+    this.cdsService.currentPreviewList.subscribe({
+      next: d => {
+        this.previewList = d ?? {
+          SUD: [],
+          MENCAT: [],
+          DEMO: [],
+          DIA: [],
+          DIS: [],
+          GDIS: [],
+          DISEASE: [],
+          DRGIS: [],
+          SEX: [],
+          SOCIAL: [],
+          VIO: [],
+        };
+        if (d) {
+          console.log('Loaded preview list.', d);
+        } else {
+          console.log(
+            'Preview list data null. Either an intentional cache clearance or not loaded yet. No worries.',
+          );
+        }
+      },
+      error: e => {
+        console.error('Failed to load preview list!');
+        console.error(e);
+      },
+    });
+
     combineLatest([
       this.patientService.currentPatientEverything$,
       this.organizationSelected,
@@ -197,7 +207,8 @@ export class ConsentComponent implements OnInit, OnDestroy {
       if (patientEverything) {
         if (
           patientEverything?.entry?.length &&
-          patientEverything.entry.length >= 1
+          patientEverything.entry.length >= 1 &&
+          patientEverything.total
         ) {
           const actors = organizationSelected.map(({ id }) => ({
             value: `Organization/${id}`,
@@ -205,9 +216,21 @@ export class ConsentComponent implements OnInit, OnDestroy {
           const patientId = [{ value: `Patient/${this.patientId}` }];
           const [_patient, ...rest] = patientEverything.entry;
           // temporarily include entry items of the example
-          const entry = [...rawRequestBody.context.content.entry, ...rest];
-          const requestBody = { ...rawRequestBody, actors, patientId, entry };
-          this.updatePreviewList(requestBody);
+          const context = {
+            ...rawRequestBody.context,
+            actor: actors,
+            patientId,
+            content: {
+              ...patientEverything,
+              entry: [...rawRequestBody.context.content.entry, ...rest],
+            },
+          };
+          const requestBody = { ...rawRequestBody, actors, patientId, context };
+
+          this.cdsService.postHook({
+            body: requestBody,
+            'cds-redaction-enabled': 'false',
+          });
         }
       }
     });
@@ -330,50 +353,5 @@ export class ConsentComponent implements OnInit, OnDestroy {
       }
     });
     return selected;
-  }
-
-  updatePreviewList(requestBody: object): void {
-    this.cdsService.postHook({
-      body: requestBody,
-      'cds-redaction-enabled': 'false',
-    });
-
-    this.cdsService.current.subscribe({
-      next: (_d: unknown) => {
-        const d = _d as CDSHookResponse;
-
-        this.previewList = d?.extension.content.entry.reduce(
-          (acc, { resource }) => {
-            if (resource.meta.security.length === 0) return acc;
-            const { code } = resource.meta.security[0];
-            const codings = JSONPath({
-              path: '$..coding',
-              json: resource,
-            }).flat();
-            return {
-              ...acc,
-              [code]: [...acc[code], ...codings],
-            };
-          },
-          {
-            SUD: [],
-            MENCAT: [],
-            DEMO: [],
-            DIA: [],
-            DIS: [],
-            GDIS: [],
-            DISEASE: [],
-            DRGIS: [],
-            SEX: [],
-            SOCIAL: [],
-            VIO: [],
-          } as PreviewList,
-        );
-      },
-      error: e => {
-        console.error('Error posting hook.');
-        console.error(e);
-      },
-    });
   }
 }
