@@ -55,8 +55,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
   _tempPreviewList: PreviewList = {
     SUD: [
       {
-        display: 'afternill',
-        code: '480',
+        display: 'ALfentanil hydrochloride',
+        code: '211378',
         system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
         resource: {
           resourceType: 'MedicationRequest',
@@ -73,8 +73,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
               coding: [
                 {
                   system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
-                  code: '480',
-                  display: 'alfentanil',
+                  code: '211393',
+                  display: 'ALfentanil hydrochloride',
                 },
               ],
             },
@@ -85,8 +85,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
         },
         rule: {
           system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
-          code: '480',
-          confidence: 0.0,
+          code: '211393',
+          confidence: 1.0,
         },
         consents: [
           {

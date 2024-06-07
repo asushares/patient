@@ -261,6 +261,37 @@ export class CDSService extends BaseService {
                 //     ],
                 //   },
                 // },
+                {
+                  display: 'ALfentanil hydrochloride',
+                  code: '211378',
+                  system: 'http://www.nlm.nih.gov/research/umls/rxnorm',
+                  resource: {
+                    resourceType: 'MedicationRequest',
+                    id: '211378',
+                    meta: {
+                      versionId: '1',
+                      lastUpdated: '2024-06-06T21:17:01.444+00:00',
+                      source: '#wkdnGAblhbQtFpOM',
+                    },
+                    status: 'active',
+                    intent: 'order',
+                    medication: {
+                      concept: {
+                        coding: [
+                          {
+                            system:
+                              'http://www.nlm.nih.gov/research/umls/rxnorm',
+                            code: '211393',
+                            display: 'ALfentanil hydrochloride',
+                          },
+                        ],
+                      },
+                    },
+                    subject: {
+                      reference: 'Patient/cfsb1703736930464',
+                    },
+                  },
+                },
               ],
               MENCAT: [],
               DEMO: [],
