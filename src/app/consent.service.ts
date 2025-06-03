@@ -1,3 +1,5 @@
+// Author: Preston Lee
+
 import { Injectable } from '@angular/core';
 import { Bundle, Consent } from 'fhir/r5';
 import { ConsentSearchField } from './consent.search.field';

@@ -1,7 +1,8 @@
 <nav
   class="navbar navbar-expand-lg bg-primary"
   data-bs-theme="dark"
-  aria-label="patient portal navbar">
+  aria-label="patient portal navbar"
+>
   <div class="container-fluid">
     <a class="navbar-brand" [routerLink]="['/']">
       <img src="/assets/images/shares-logo.png" alt="ASU SHARES Logo" />&nbsp;
@@ -11,19 +12,22 @@
     <button
       class="navbar-toggler"
       type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarCollapse"
       aria-controls="navbarCollapse"
-      (click)="isMenuCollapsed = !isMenuCollapsed"
-      [attr.aria-expanded]="!isMenuCollapsed"
-      [attr.aria-label]="isMenuCollapsed ? 'Open menu' : 'Close menu'">
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li
           class="nav-item"
           [routerLinkActive]="'active'"
-          [routerLinkActiveOptions]="{ exact: true }">
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a class="nav-link" [routerLink]="['summary']">
             <span class="bi bi-clipboard-data"></span> My Record Summary
           </a>
@@ -32,7 +36,8 @@
         <li
           class="nav-item"
           [routerLinkActive]="'active'"
-          [routerLinkActiveOptions]="{ exact: true }">
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           <a class="nav-link" [routerLink]="['consent-list']">
             <span class="bi bi-files"></span> My Sharing Settings
           </a>
@@ -40,21 +45,22 @@
       </ul>
 
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item" [routerLinkActive]="'active'" ngbDropdown>
-          <button
-            class="nav-link"
-            type="button"
+        <li class="nav-item dropdown" [routerLinkActive]="'active'">
+          <a
+            class="nav-link dropdown-toggle"
+            role="button"
             id="dropdownDocumentation"
-            ngbDropdownToggle>
+            data-bs-toggle="dropdown"
+          >
             <i class="bi-book"></i> Documentation
-          </button>
-          <ul aria-labelledby="dropdownDocumentation" ngbDropdownMenu>
-            <li ngbDropdownItem>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownDocumentation">
+            <li class="dropdown-item">
               <a href="https://www.asushares.com" target="_blank"
                 ><i class="bi-globe"></i> ASU SHARES Home</a
               >
             </li>
-            <li ngbDropdownItem>
+            <li class="dropdown-item">
               <a href="https://www.github.com/asushares" target="_blank"
                 ><i class="bi-github"></i> GitHub</a
               >
@@ -76,7 +82,8 @@
           <a
             class="nav-link"
             href="https://www.asushares.com/contact/"
-            target="_blank">
+            target="_blank"
+          >
             <i class="bi-chat"></i> Leave Feedback
           </a>
         </li>

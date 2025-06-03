@@ -1,17 +1,18 @@
 <div class="container-fluid shadow" style="margin-top: 40px">
-  <ul ngbNav #nav="ngbNav" [(activeId)]="activeCategory" class="nav-tabs">
+  <ul class="navbar-nav" >
     @for (category of categories; track category.id) {
-      <li [ngbNavItem]="category.id">
+      <!-- <li [ngbNavItem]="category.id"> -->
+        <li class="nav-item" [id]="category.id">
         <button ngbNavLink>{{ category.label }}</button>
         <ng-template ngbNavContent>
-          <div ngbAccordion [closeOthers]="true">
+          <div class="accordion">
             @for (item of _tempPreviewList[category.id]; track item.display) {
-              <div ngbAccordionItem [collapsed]="false">
-                <h2 ngbAccordionHeader>
+              <div class="accordion-item" >
+                <h2 class="accordion-header">
                   <button ngbAccordionButton>{{ item.display }}</button>
                 </h2>
-                <div ngbAccordionCollapse>
-                  <div ngbAccordionBody>
+                <div class="accordion-collapse">
+                  <div class="accordion-body">
                     <ng-template>
                       <h3>Consents</h3>
                       <table class="table table-striped">
@@ -84,5 +85,5 @@
       </li>
     }
   </ul>
-  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  <!-- <div [ngbNavOutlet]="nav" class="mt-2"></div> -->
 </div>

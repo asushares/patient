@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+
 import { PatientService } from './patient.service';
 import { BackendService } from './backend.service';
 import { ConsentService } from './consent.service';
@@ -19,14 +19,13 @@ import { CDSService } from './cds.service';
     RouterOutlet,
     RouterModule,
     FormsModule,
-    HttpClientModule,
   ],
   providers: [
     CDSService,
     PatientService,
     ConsentService,
     OrganizationService,
-    BackendService,
+    BackendService
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

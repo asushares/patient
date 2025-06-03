@@ -1,16 +1,15 @@
+// Author: Preston Lee
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import {
-  NgbCollapseModule,
-  NgbDropdownModule,
-} from '@ng-bootstrap/ng-bootstrap';
+
 import { PatientService } from '../patient.service';
 import { Bundle, HumanName, Patient } from 'fhir/r5';
 
 @Component({
   selector: 'app-portal',
   standalone: true,
-  imports: [RouterModule, NgbCollapseModule, NgbDropdownModule],
+  imports: [RouterModule],
   templateUrl: './portal.component.html',
   styleUrl: './portal.component.scss',
 })

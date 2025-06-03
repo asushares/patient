@@ -9,24 +9,22 @@ import { CommonModule } from '@angular/common';
 import { SimpleConsent } from './simple_consent';
 import { OrganizationService } from '../organization.service';
 import { ConsentCategoryFormCheckComponent } from './consent-category-form-check/consent-category-form-check.component';
-import { ConsentPeriodComponent } from './consent-period/consent-period.component';
+// import { ConsentPeriodComponent } from './consent-period/consent-period.component';
 import {
   CDSService,
   type MedicalInformationType,
   type PreviewList,
 } from '../cds.service';
 // used to test
-import rawRequestBody from '../example-request-permit.json';
 import { PatientService } from '../patient.service';
 import { BehaviorSubject, combineLatest } from 'rxjs';
+import { ExampleRequestPermit } from '../example-request-permit';
 @Component({
   selector: 'app-consent',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ConsentCategoryFormCheckComponent,
-    ConsentPeriodComponent,
+    FormsModule
   ],
   templateUrl: './consent.component.html',
   styleUrl: './consent.component.scss',
@@ -216,6 +214,7 @@ export class ConsentComponent implements OnInit, OnDestroy {
           const patientId = [{ value: `Patient/${this.patientId}` }];
           const [_patient, ...rest] = patientEverything.entry;
           // temporarily include entry items of the example
+          const rawRequestBody = new ExampleRequestPermit().body;
           const context = {
             ...rawRequestBody.context,
             actor: actors,

@@ -6,13 +6,13 @@ import {
   type SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-consent-category-form-check',
   standalone: true,
-  imports: [CommonModule, NgbPopoverModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './consent-category-form-check.component.html',
   styleUrl: './consent-category-form-check.component.scss',
 })

@@ -1,3 +1,5 @@
+// Author: Preston Lee
+
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
@@ -6,15 +8,15 @@ import {
   type PreviewList,
 } from '../cds.service';
 import { ActivatedRoute } from '@angular/router';
-import { NgbAccordionModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { PatientService } from '../patient.service';
 import { Bundle } from 'fhir/r5';
-import rawRequestBody from '../example-request-permit.json';
+import { ExampleRequestPermit } from '../example-request-permit';
 
 @Component({
   selector: 'app-summary',
   standalone: true,
-  imports: [CommonModule, NgbAccordionModule, NgbNavModule],
+  imports: [CommonModule],
   templateUrl: './summary.component.html',
   styleUrl: './summary.component.scss',
 })
@@ -252,11 +254,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
     private cdsService: CDSService,
     private route: ActivatedRoute,
     private patientService: PatientService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.patientId = this.route.parent!.snapshot.paramMap.get('patient_id');
-
+    const rawRequestBody = new ExampleRequestPermit().body;
     this.patientService.currentPatientEverything$.subscribe({
       next: d => {
         this.patientEverything = d;
