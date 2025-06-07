@@ -8,7 +8,6 @@ import { Bundle, HumanName, Patient } from 'fhir/r5';
 
 @Component({
   selector: 'app-portal',
-  standalone: true,
   imports: [RouterModule],
   templateUrl: './portal.component.html',
   styleUrl: './portal.component.scss',

@@ -13,7 +13,6 @@ import { CDSService } from './cds.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     CommonModule,
     RouterOutlet,

@@ -21,7 +21,6 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { ExampleRequestPermit } from '../example-request-permit';
 @Component({
   selector: 'app-consent',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule

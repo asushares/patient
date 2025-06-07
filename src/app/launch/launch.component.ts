@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-launch',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './launch.component.html',
   styleUrl: './launch.component.scss',

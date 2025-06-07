@@ -13,7 +13,6 @@
 
 // @Component({
 //   selector: 'app-consent-period',
-//   standalone: true,
 //   imports: [FormsModule],
 //   templateUrl: './consent-period.component.html',
 //   styleUrl: './consent-period.component.scss',

@@ -9,7 +9,6 @@ import { Bundle, Consent, Patient } from 'fhir/r5';
 
 @Component({
   selector: 'app-consent-list',
-  standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './consent-list.component.html',
   styleUrl: './consent-list.component.scss',
